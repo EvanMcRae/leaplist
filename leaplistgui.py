@@ -4,6 +4,7 @@ from tkinter import messagebox
 from PIL import ImageTk, Image
 import os
 import sys
+import leaplistcsv as llcsv
 
 # fixes some ugly blurring on windows
 if sys.platform == "win32":
@@ -18,6 +19,7 @@ class leaplist():
         self.main_window.resizable(False, False) # disables resizing
         self.main_window.geometry('1275x720')
         self.main_window.config(bg = '#fff')
+        self.enter_task_frame = None
         
         # TODO configure style for sidebar buttons
         self.style = ttk.Style()
@@ -76,6 +78,16 @@ class leaplist():
         self.today_label = tkinter.Label(self.today_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
+        #adding a frame within today at the bottom to put an add task button
+        self.add_task_frame = tkinter.Frame(self.today_frame, bg = '#363237', width = 900, height = 50)
+        # I thought side = 'bottom would place it at the bottom, it's not working and I don't know enough yet to fix it
+        self.add_task_frame.pack(side = 'bottom', pady = 10)
+        #stop the add task frame from resizing with the button
+        self.add_task_frame.pack_propagate(False)
+        #add task button
+        self.add_task_button = ttk.Button(self.add_task_frame, text='Add Task', command=self.enter_task, cursor="hand2")
+        self.add_task_button.pack(anchor = 'center', pady = 10)
+
         # upcoming frame
         self.upcoming_frame = tkinter.Frame(self.content_frame, bg = '#8e9294', width = 650, height = 690)
         self.upcoming_frame.grid(row=0, column=0, sticky='news')
@@ -121,6 +133,16 @@ class leaplist():
     # quits application
     def quit(self):
         self.main_window.destroy()
+
+    #brings up a box to add a task and notes if wanted
+    def enter_task(self):
+        #if there's already a task entry box open, don't open another
+        if self.enter_task_frame:
+            return
+
+        #I still need to create the GUI for the actual input
+        #Then it will save via the llcsv save_task function
+
 
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):

@@ -105,22 +105,22 @@ def task_completed():
     pass
 
 #testing and putting in several tasks
-def menu():
-    show_menu = True
-    while show_menu:
-        print("1. Add a task")
-        print("2. See today's tasks")
-        print("3. Exit")
+#def menu():
+    #show_menu = True
+    #while show_menu:
+        #print("1. Add a task")
+        #print("2. See today's tasks")
+        #print("3. Exit")
 
-        choice = input("Enter your choice: ")
-        if choice == "1":
-            new_task()
-        elif choice == "2":
-            todays_list()
-        elif choice == "3":
-            show_menu = False
-        else:
-            print("Invalid")
+        #choice = input("Enter your choice: ")
+        #if choice == "1":
+            #new_task()
+        #elif choice == "2":
+            #todays_list()
+        #elif choice == "3":
+            #show_menu = False
+        #else:
+            #print("Invalid")
 
-if __name__ == "__main__":
-    menu()
+#if __name__ == "__main__":
+    #menu()
