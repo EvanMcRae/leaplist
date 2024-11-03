@@ -30,10 +30,13 @@ class leaplist():
         self.logo_photo = ImageTk.PhotoImage(self.logo)
 
         # create top bar frame
-        self.top_bar = tkinter.Frame(self.main_window, bg = '#363237', relief="sunken", width=1275, height=60)
+        self.top_bar = tkinter.Frame(self.main_window, bg = '#363237', relief = "sunken", width = 1275, height = 60)
         self.top_bar.pack(ipady = 15)
-        self.logo_label = tkinter.Label(self.top_bar, image = self.logo_photo, bg = '#363237')
+
+        # create logo
+        self.logo_label = tkinter.Label(self.top_bar, image = self.logo_photo, bg = '#363237', cursor = "hand2")
         self.logo_label.place(x = 15, y = 15)
+        self.logo_label.bind("<Button-1>", self.on_logo_click) # click handling could be used instead of buttons maybe?
 
         #### SIDEBAR ####
 
@@ -42,23 +45,23 @@ class leaplist():
         self.sidebar.pack(side = 'left', fill = 'y')
 
         # create today button
-        self.today_button = ttk.Button(self.sidebar, text = 'Today', width = 30, command = self.today, style="Sidebar.TButton")
+        self.today_button = ttk.Button(self.sidebar, text = 'Today', width = 30, command = self.today, style="Sidebar.TButton", cursor = "hand2")
         self.today_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create upcoming button
-        self.upcoming_button = ttk.Button(self.sidebar, text = 'Upcoming', width = 30, command = self.upcoming, style="Sidebar.TButton")
+        self.upcoming_button = ttk.Button(self.sidebar, text = 'Upcoming', width = 30, command = self.upcoming, style="Sidebar.TButton", cursor = "hand2")
         self.upcoming_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create completed button
-        self.completed_button = ttk.Button(self.sidebar, text = 'Completed', width = 30, command = self.completed, style="Sidebar.TButton")
+        self.completed_button = ttk.Button(self.sidebar, text = 'Completed', width = 30, command = self.completed, style="Sidebar.TButton", cursor = "hand2")
         self.completed_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create productivity button
-        self.productivity_button = ttk.Button(self.sidebar, text = 'Productivity', command = self.productivity, width = 30, style="Sidebar.TButton")
+        self.productivity_button = ttk.Button(self.sidebar, text = 'Productivity', command = self.productivity, width = 30, style="Sidebar.TButton", cursor = "hand2")
         self.productivity_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create quit button -- TODO move this somewhere else
-        self.quit_button = ttk.Button(self.sidebar, text = 'Quit (WILL BE MOVED)', command = self.quit, width = 30, style="Sidebar.TButton")
+        self.quit_button = ttk.Button(self.sidebar, text = 'Quit (WILL BE MOVED)', command = self.quit, width = 30, style="Sidebar.TButton", cursor = "hand2")
         self.quit_button.pack(fill = 'x', padx = 15, pady = 15)
 
         #### CONTENT ####
@@ -118,6 +121,10 @@ class leaplist():
     # quits application
     def quit(self):
         self.main_window.destroy()
+
+    # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
+    def on_logo_click(self, event):
+        print('clicked me!')
 
 # create the application
 LeapList = leaplist()
