@@ -109,6 +109,32 @@ class leaplist():
         # show today frame first
         self.today_frame.tkraise()
 
+        ##could I add a user input here? 
+
+
+        
+        self.user_entry = tkinter.Entry()
+        self.user_entry.config(font=('Comic Sans MS', 15))       
+        #hexadecimal for font color
+        self.user_entry.config(bg='#fff')
+        self.user_entry.config(fg='#00ff00')
+
+        #We can always disable the text box when we don't want users to type anything.
+        #self.user_entry.config(state= 'disabled')
+
+        #does not limit amount of characters passed; limits amount of characters displayed
+        self.user_entry.config(width=25)
+
+
+
+        self.user_entry.pack()
+        self.user_entry.focus_set()
+
+        #this is a test button to identify where it is
+        
+        self.test_button = tkinter.Button(self.add_task_frame, text='test',command=self.enter_task)
+        self.test_button.pack(side='bottom')
+
         # activate application
         self.main_window.mainloop()
 
@@ -136,6 +162,13 @@ class leaplist():
 
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
+        #testing something out for userinput -DAB
+        #retrieve text from user entry
+        task = self.user_entry.get()
+        #printing for proof of concept
+        print(task)
+
+
         #if there's already a task entry box open, don't open another
         if self.enter_task_frame:
             return
@@ -147,6 +180,8 @@ class leaplist():
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
+
+
 
 # create the application
 LeapList = leaplist()
