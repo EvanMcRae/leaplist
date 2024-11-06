@@ -74,8 +74,18 @@ class leaplist():
         self.content_frame.grid_rowconfigure(0, weight=1)
         self.content_frame.grid_columnconfigure(0, weight=1)
 
+        # scrollbar
+        self.tree_view = ttk.Treeview(self.content_frame)
+        self.tree_view.grid(row=0, column=0, sticky="nsew") # columnspan=2 goes here.
+        self.scroll = ttk.Scrollbar(self.content_frame)
+        self.scroll.grid(row=0, column=0, sticky="nse") # set this to column=2 so it sits in the correct spot.
+        self.scroll.configure(command=self.tree_view.yview)
+        self.tree_view.configure(yscrollcommand=self.scroll.set)
+        self.tree_view.grid_rowconfigure(0, weight=1)
+        self.tree_view.grid_columnconfigure(0, weight=1)
+
         # today frame
-        self.today_frame = tkinter.Frame(self.content_frame, bg = '#8e9294')
+        self.today_frame = tkinter.Frame(self.tree_view, bg = '#8e9294')
         self.today_frame.grid(row=0, column=0, sticky="nsew")
         self.today_label = tkinter.Label(self.today_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
@@ -91,19 +101,19 @@ class leaplist():
         self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
 
         # upcoming frame
-        self.upcoming_frame = tkinter.Frame(self.content_frame, bg = '#8e9294', width = 650, height = 690)
+        self.upcoming_frame = tkinter.Frame(self.tree_view, bg = '#8e9294', width = 650, height = 690)
         self.upcoming_frame.grid(row=0, column=0, sticky='news')
         self.upcoming_label = tkinter.Label(self.upcoming_frame, text = 'Upcoming', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.upcoming_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # completed frame
-        self.completed_frame = tkinter.Frame(self.content_frame, bg = '#8e9294', width = 650, height = 690)
+        self.completed_frame = tkinter.Frame(self.tree_view, bg = '#8e9294', width = 650, height = 690)
         self.completed_frame.grid(row=0, column=0, sticky='news')
         self.completed_label = tkinter.Label(self.completed_frame, text = 'Completed', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.completed_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # productivity frame
-        self.productivity_frame = tkinter.Frame(self.content_frame, bg = '#8e9294', width = 650, height = 690)
+        self.productivity_frame = tkinter.Frame(self.tree_view, bg = '#8e9294', width = 650, height = 690)
         self.productivity_frame.grid(row=0, column=0, sticky='news')
         self.productivity_label = tkinter.Label(self.productivity_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
