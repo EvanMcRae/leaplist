@@ -32,28 +32,28 @@ if not os.path.exists(file_path):
                "Status", "Creation Time", "Tags", "Time to Complete", "Completion Time"]
     pd.DataFrame(columns=cols).to_csv(file_path, index=False)
 
-def new_task():
+def new_task(task_name, description, work_date, deadline, priority, tags):
     #after doing this, i realized we will have to have a way to edit each aspect of the task after initally putting it in
     #since optional items might get filled in later
 
 
     # required, user input can be anything
-    task_name = input("Enter the name of the task: ")
+    #task_name = input("Enter the name of the task: ")
     # optional, user input can be anything
-    description = input("Enter the description of the task (optional): ")
+    #description = input("Enter the description of the task (optional): ")
     # optional, but if no input specifed, should default to current date
     #also need to figure out how to make sure the date is in the correct format
     #in my to do list app there's a mini calendar users select from
-    work_date = input("Enter the date you plan to work on the task (YYYY-MM-DD)(optional): ")
+    #work_date = input("Enter the date you plan to work on the task (YYYY-MM-DD)(optional): ")
     #optional, my to do list app leaves it blank if not specified
     #also need to figure out how to make sure the date is in the correct format in GUI, maybe use caldendar selection
-    deadline = input("Enter the deadline for the task (YYYY-MM-DD)(optional): ")
+    #deadline = input("Enter the deadline for the task (YYYY-MM-DD)(optional): ")
     #optional, leave blank if not selected, otherwise ensure user can only select those options
     # maybe use a dropdown menu for these 3 options when selecting in the GUI
-    priority = input("Enter the priority of the task (high, medium, low)(optional): ")
+    #priority = input("Enter the priority of the task (high, medium, low)(optional): ")
     #optional, leave blank if not selected
     #if other tags exist it would be nice to have a dropdown list of those tags
-    tags = input("Enter any tags for the task (optional): ")
+    #tags = input("Enter any tags for the task (optional): ")
 
 
     #generated stuff
