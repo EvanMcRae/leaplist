@@ -96,6 +96,23 @@ class leaplist():
         self.add_task_frame.pack(anchor = 's', side = 'bottom', fill = 'both')
         #stop the add task frame from resizing with the button
         self.add_task_frame.pack_propagate(False)
+
+        #user input implementation        
+        self.user_entry = tkinter.Entry()
+        self.user_entry.config(font=('Comic Sans MS', 15))       
+        #hexadecimal for font color
+        self.user_entry.config(bg='#fff')
+        self.user_entry.config(fg='#00ff00')
+
+        #We can always disable the text box when we don't want users to type anything.
+        #self.user_entry.config(state= 'disabled')
+
+        #does not limit amount of characters passed; limits amount of characters displayed
+        self.user_entry.config(width=25)
+        self.user_entry.pack()
+        self.user_entry.focus_set()
+
+
         #add task button
         self.add_task_button = ttk.Button(self.add_task_frame, text='Add Task', command=self.enter_task, cursor="hand2")
         self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
@@ -121,32 +138,8 @@ class leaplist():
         # show today frame first
         self.today_frame.tkraise()
 
-        ##could I add a user input here? 
-
 
         
-        self.user_entry = tkinter.Entry()
-        self.user_entry.config(font=('Comic Sans MS', 15))       
-        #hexadecimal for font color
-        self.user_entry.config(bg='#fff')
-        self.user_entry.config(fg='#00ff00')
-
-        #We can always disable the text box when we don't want users to type anything.
-        #self.user_entry.config(state= 'disabled')
-
-        #does not limit amount of characters passed; limits amount of characters displayed
-        self.user_entry.config(width=25)
-
-
-
-        self.user_entry.pack()
-        self.user_entry.focus_set()
-
-        #this is a test button to identify where it is
-        
-        self.test_button = tkinter.Button(self.add_task_frame, text='test',command=self.enter_task)
-        self.test_button.pack(side='bottom')
-
         # activate application
         self.main_window.mainloop()
 
