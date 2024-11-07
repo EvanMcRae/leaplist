@@ -200,6 +200,9 @@ class LeapList():
         #printing for proof of concept
         print(task)
 
+        #test call to function in csv.py
+        llcsv.new_task(task, task, 1, 2, 3, task)
+
 
         #if there's already a task entry box open, don't open another
         if self.enter_task_frame:
