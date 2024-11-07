@@ -20,11 +20,10 @@ class ScrollableFrame(ttk.Frame):
         self.canvas.pack(side = 'left', fill = 'both', expand = True)
 
         # create scrollbar
-        scrollbar = ttk.Scrollbar(self, orient = 'vertical', command = self.canvas.yview)
-        scrollbar.pack(side = 'right', fill = 'y')
+        self.scrollbar = ttk.Scrollbar(self, orient = 'vertical', command = self.canvas.yview)
 
         # attach scrollbar to canvas
-        self.canvas.configure(yscrollcommand = scrollbar.set)
+        self.canvas.configure(yscrollcommand = self.scrollbar.set)
 
         # create scrollable frame inside canvas to hold widgets
         self.scrollable_frame = ttk.Frame(self.canvas, style = 'LeapList.TFrame')
@@ -44,14 +43,31 @@ class ScrollableFrame(ttk.Frame):
 
     # handle mouse wheel scrolling
     def _on_mousewheel(self, event):
-        if event.delta < 0:
-            self.canvas.yview_scroll(1, 'units')
-        elif event.delta > 0:
-            self.canvas.yview_scroll(-1, 'units')
+        # only able to scroll if content exceeds canvas height
+        canvas_height = self.canvas.winfo_height()
+        content_height = self.canvas.bbox("all")[3] # bottom of the bounding box
+
+        if content_height > canvas_height:
+            if event.delta < 0:
+                self.canvas.yview_scroll(1, 'units')
+            elif event.delta > 0:
+                self.canvas.yview_scroll(-1, 'units')
 
     # update scroll region of canvas when frame size changes
     def _update_scrollregion(self, event):
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+        self.toggle_scrollbar()
+
+    # toggle visibility of scrollbar based on content height
+    def toggle_scrollbar(self):
+        # get height of canvas and content in frame
+        canvas_height = self.canvas.winfo_height()
+        content_height = self.canvas.bbox("all")[3] # bottom of the bounding box
+
+        if content_height > canvas_height:
+            self.scrollbar.pack(side="right", fill="y")
+        else:
+            self.scrollbar.pack_forget()
 
 class LeapList(tkinter.Tk):
     def __init__(self):
@@ -123,8 +139,7 @@ class LeapList(tkinter.Tk):
 
         # today frame
         self.today = ScrollableFrame(self)
-        self.today.bind_events()
-        self.today.pack(fill="both", expand=True)
+        self.today.pack(fill = 'both', expand = True)
         self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         self.current_frame = self.today
@@ -218,14 +233,14 @@ class LeapList(tkinter.Tk):
         #test call to function in csv.py
         llcsv.new_task(task, task, 1, 2, 3, task)
 
-        # TODO: Only add to one of these based on date
-        today_label = tkinter.Label(self.today.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
-        today_label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
-        self.today_tasks.append(today_label)
-
-        upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
-        upcoming_label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
-        self.upcoming_tasks.append(upcoming_label)
+        # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
+        label = tkinter.Label(self.current_frame.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
+        label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
+        if self.current_frame == self.today:
+            self.today_tasks.append(label)
+        else:
+            self.upcoming_tasks.append(label)
+        self.current_frame.bind_events()
 
         # TODO: Is this still how we want to do things? To discuss tomorrow
         #if there's already a task entry box open, don't open another
