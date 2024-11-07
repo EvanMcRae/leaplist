@@ -61,9 +61,9 @@ class LeapList():
         self.main_window.config(bg = '#fff')
         self.enter_task_frame = None
         
-        # TODO configure style for sidebar buttons
         self.style = ttk.Style()
-        self.style.configure('Sidebar.TButton', anchor = 'w', padding = (10, 20, 50, 20), background = '#605d60')
+        self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
+        self.style.configure('Selected.TLabel', foreground = '#fff', background = '#605d60')
 
         #### TOPBAR ####
 
@@ -83,28 +83,34 @@ class LeapList():
         #### SIDEBAR ####
 
         # create sidebar frame
-        self.sidebar = tkinter.Frame(self.main_window, bg = '#605d60', width = 300, height = 690)
-        self.sidebar.pack(side = 'left', fill = 'y')
+        self.sidebar = tkinter.Frame(self.main_window, bg = '#605d60', width = 30, height = 690)
+        self.sidebar.pack(side = 'left', fill = 'both')
 
         # create today button
-        self.today_button = ttk.Button(self.sidebar, text = 'Today', width = 30, command = self.open_today, style="Sidebar.TButton", cursor = 'hand2')
+        self.today_button = ttk.Label(self.sidebar, text = 'Today', font = ('Arial', 30), style = 'Selected.TLabel', cursor = 'hand2')
         self.today_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.today_button.bind('<Button-1>', self.open_today)
+        self.selected_button = self.today_button
 
         # create upcoming button
-        self.upcoming_button = ttk.Button(self.sidebar, text = 'Upcoming', width = 30, command = self.open_upcoming, style="Sidebar.TButton", cursor = 'hand2')
+        self.upcoming_button = ttk.Label(self.sidebar, text = 'Upcoming', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
         self.upcoming_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.upcoming_button.bind('<Button-1>', self.open_upcoming)
 
         # create completed button
-        self.completed_button = ttk.Button(self.sidebar, text = 'Completed', width = 30, command = self.open_completed, style="Sidebar.TButton", cursor = 'hand2')
+        self.completed_button = ttk.Label(self.sidebar, text = 'Completed', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
         self.completed_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.completed_button.bind('<Button-1>', self.open_completed)
 
         # create productivity button
-        self.productivity_button = ttk.Button(self.sidebar, text = 'Productivity', command = self.open_productivity, width = 30, style="Sidebar.TButton", cursor = 'hand2')
+        self.productivity_button = ttk.Label(self.sidebar, text = 'Productivity', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
         self.productivity_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.productivity_button.bind('<Button-1>', self.open_productivity)
 
         # create quit button -- TODO move this somewhere else
-        self.quit_button = ttk.Button(self.sidebar, text = 'Quit (WILL BE MOVED)', command = self.quit, width = 30, style = 'Sidebar.TButton', cursor = 'hand2')
+        self.quit_button = ttk.Label(self.sidebar, text = 'Quit', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
         self.quit_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.quit_button.bind('<Button-1>', self.quit)
 
         #### CONTENT ####
 
@@ -115,9 +121,9 @@ class LeapList():
         # today frame
         self.today = ScrollableFrame(self.content_frame)
         self.today.pack(fill="both", expand=True)
-        self.open_frame = self.today
+        self.current_frame = self.today
         
-        self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
+        self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # add task button
@@ -135,7 +141,7 @@ class LeapList():
 
         #does not limit amount of characters passed; limits amount of characters displayed
         self.user_entry.config(width=25)
-        self.user_entry.pack()
+        self.user_entry.pack(pady = 10)
         self.user_entry.focus_set()
 
         #add task button
@@ -144,61 +150,46 @@ class LeapList():
 
         # upcoming frame
         self.upcoming = ScrollableFrame(self.content_frame)
-        self.upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = 'Upcoming', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
+        self.upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = 'Upcoming', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.upcoming_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # completed frame
         self.completed = ScrollableFrame(self.content_frame)
-        self.completed_label = tkinter.Label(self.completed.scrollable_frame, text = 'Completed', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
+        self.completed_label = tkinter.Label(self.completed.scrollable_frame, text = 'Completed', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.completed_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # productivity frame
         self.productivity = ScrollableFrame(self.content_frame)
-        self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
+        self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         
         # activate application
         self.main_window.mainloop()
 
     #### SIDEBAR BUTTON COMMANDS ####
-    # TODO: these could probably be consolidated more efficiently but it works well enough for now
+    def open_today(self, event):
+        self.open_frame(self.today, self.today_button)
 
-    # opens today frame
-    def open_today(self):
-        if self.open_frame != self.today:
-            self.open_frame.pack_forget()
-            self.today.pack(fill="both", expand=True)
-            self.open_frame = self.today
-            self.add_task_button.pack_forget()
-            self.add_task_button = ttk.Button(self.today.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-            self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
+    def open_upcoming(self, event):
+        self.open_frame(self.upcoming, self.upcoming_button)
 
-    # opens upcoming frame
-    def open_upcoming(self):
-        if self.open_frame != self.upcoming:
-            self.open_frame.pack_forget()
-            self.upcoming.pack(fill="both", expand=True)
-            self.open_frame = self.upcoming
-            self.add_task_button.pack_forget()
-            self.add_task_button = ttk.Button(self.upcoming.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-            self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
+    def open_completed(self, event):
+        self.open_frame(self.completed, self.completed_button)
 
-    # opens completed frame
-    def open_completed(self):
-        if self.open_frame != self.completed:
-            self.open_frame.pack_forget()
-            self.completed.pack(fill="both", expand=True)
-            self.open_frame = self.completed
+    def open_productivity(self, event):
+        self.open_frame(self.productivity, self.productivity_button)
 
-    # opens productivity frame
-    def open_productivity(self):
-        if self.open_frame != self.productivity:
-            self.open_frame.pack_forget()
-            self.productivity.pack(fill="both", expand=True)
-            self.open_frame = self.productivity
+    def open_frame(self, frame, button):
+        if self.open_frame != frame:
+            self.current_frame.pack_forget()
+            frame.pack(fill="both", expand=True)
+            self.current_frame = frame
+            self.selected_button.config(style = 'Sidebar.TLabel')
+            self.selected_button = button
+            self.selected_button.config(style = 'Selected.TLabel')
 
     # quits application
-    def quit(self):
+    def quit(self, event):
         self.main_window.destroy()
 
     #brings up a box to add a task and notes if wanted
