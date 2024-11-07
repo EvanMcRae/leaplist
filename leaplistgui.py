@@ -45,7 +45,7 @@ class ScrollableFrame(ttk.Frame):
     def _on_mousewheel(self, event):
         # only able to scroll if content exceeds canvas height
         canvas_height = self.canvas.winfo_height()
-        content_height = self.canvas.bbox("all")[3] # bottom of the bounding box
+        content_height = self.canvas.bbox('all')[3] # bottom of the bounding box
 
         if content_height > canvas_height:
             if event.delta < 0:
@@ -62,10 +62,10 @@ class ScrollableFrame(ttk.Frame):
     def toggle_scrollbar(self):
         # get height of canvas and content in frame
         canvas_height = self.canvas.winfo_height()
-        content_height = self.canvas.bbox("all")[3] # bottom of the bounding box
+        content_height = self.canvas.bbox('all')[3] # bottom of the bounding box
 
         if content_height > canvas_height:
-            self.scrollbar.pack(side="right", fill="y")
+            self.scrollbar.pack(side = 'right', fill = 'y')
         else:
             self.scrollbar.pack_forget()
 
@@ -88,7 +88,7 @@ class LeapList(tkinter.Tk):
         #### TOPBAR ####
 
         # import logo png
-        self.logo = Image.open("logo.png")
+        self.logo = Image.open('logo.png')
         self.logo_photo = ImageTk.PhotoImage(self.logo)
 
         # create top bar frame
@@ -165,11 +165,11 @@ class LeapList(tkinter.Tk):
 
         # user input
         self.user_entry = tkinter.Entry(self.add_task_frame)
-        self.user_entry.config(font=('Comic Sans MS', 15))
+        self.user_entry.config(font = ('Comic Sans MS', 15))
 
         # hexadecimal for font color
-        self.user_entry.config(bg='#fff')
-        self.user_entry.config(fg='#00ff00')
+        self.user_entry.config(bg = '#fff')
+        self.user_entry.config(fg = '#00ff00')
 
         #We can always disable the text box when we don't want users to type anything.
         #self.user_entry.config(state= 'disabled')
@@ -211,7 +211,7 @@ class LeapList(tkinter.Tk):
     def open_frame(self, frame, button):
         self.current_frame.unbind_events()
         self.current_frame.pack_forget()
-        frame.pack(fill="both", expand=True)
+        frame.pack(fill = 'both', expand = True)
         self.current_frame = frame
         self.current_frame.bind_events()
         self.selected_button.config(style = 'Sidebar.TLabel')
@@ -255,6 +255,6 @@ class LeapList(tkinter.Tk):
         print('clicked me!')
 
 # create the application
-if __name__ == "__main__":
+if __name__ == '__main__':
     LeapList = LeapList()
     LeapList.mainloop()
