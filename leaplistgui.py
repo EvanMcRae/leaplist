@@ -87,19 +87,19 @@ class LeapList():
         self.sidebar.pack(side = 'left', fill = 'y')
 
         # create today button
-        self.today_button = ttk.Button(self.sidebar, text = 'Today', width = 30, command = self.today, style="Sidebar.TButton", cursor = 'hand2')
+        self.today_button = ttk.Button(self.sidebar, text = 'Today', width = 30, command = self.open_today, style="Sidebar.TButton", cursor = 'hand2')
         self.today_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create upcoming button
-        self.upcoming_button = ttk.Button(self.sidebar, text = 'Upcoming', width = 30, command = self.upcoming, style="Sidebar.TButton", cursor = 'hand2')
+        self.upcoming_button = ttk.Button(self.sidebar, text = 'Upcoming', width = 30, command = self.open_upcoming, style="Sidebar.TButton", cursor = 'hand2')
         self.upcoming_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create completed button
-        self.completed_button = ttk.Button(self.sidebar, text = 'Completed', width = 30, command = self.completed, style="Sidebar.TButton", cursor = 'hand2')
+        self.completed_button = ttk.Button(self.sidebar, text = 'Completed', width = 30, command = self.open_completed, style="Sidebar.TButton", cursor = 'hand2')
         self.completed_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create productivity button
-        self.productivity_button = ttk.Button(self.sidebar, text = 'Productivity', command = self.productivity, width = 30, style="Sidebar.TButton", cursor = 'hand2')
+        self.productivity_button = ttk.Button(self.sidebar, text = 'Productivity', command = self.open_productivity, width = 30, style="Sidebar.TButton", cursor = 'hand2')
         self.productivity_button.pack(fill = 'x', padx = 15, pady = 15)
 
         # create quit button -- TODO move this somewhere else
@@ -111,27 +111,20 @@ class LeapList():
         # content frame (contains all other frames below, allows switching between)
         self.content_frame = tkinter.Frame(self.main_window, bg = '#8e9294', width = 650, height = 690)
         self.content_frame.pack(fill = 'both', expand = True)
-        self.frames = []
         
         # today frame
         self.today = ScrollableFrame(self.content_frame)
         self.today.pack(fill="both", expand=True)
-        self.frames.append(self.today)
-
+        self.open_frame = self.today
+        
         self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # add task button
         self.add_task_button = ttk.Button(self.today.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-        #adding a frame within today at the bottom to put an add task button
-        self.add_task_frame = tkinter.Frame(self.today_frame, bg = '#363237', width = 900, height = 50)
-        # I thought side = 'bottom would place it at the bottom, it's not working and I don't know enough yet to fix it
-        self.add_task_frame.pack(anchor = 's', side = 'bottom', fill = 'both')
-        #stop the add task frame from resizing with the button
-        self.add_task_frame.pack_propagate(False)
 
         #user input implementation        
-        self.user_entry = tkinter.Entry()
+        self.user_entry = tkinter.Entry(self.today.footer)
         self.user_entry.config(font=('Comic Sans MS', 15))       
         #hexadecimal for font color
         self.user_entry.config(bg='#fff')
@@ -145,33 +138,24 @@ class LeapList():
         self.user_entry.pack()
         self.user_entry.focus_set()
 
-
         #add task button
-        self.add_task_button = ttk.Button(self.add_task_frame, text='Add Task', command=self.enter_task, cursor="hand2")
+        self.add_task_button = ttk.Button(self.today.footer, text='Add Task', command=self.enter_task, cursor="hand2")
         self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
 
         # upcoming frame
         self.upcoming = ScrollableFrame(self.content_frame)
-        self.frames.append(self.upcoming)
-
         self.upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = 'Upcoming', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.upcoming_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # completed frame
         self.completed = ScrollableFrame(self.content_frame)
-        self.frames.append(self.completed)
-
         self.completed_label = tkinter.Label(self.completed.scrollable_frame, text = 'Completed', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.completed_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # productivity frame
         self.productivity = ScrollableFrame(self.content_frame)
-        self.frames.append(self.productivity)
-
         self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font=('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-
-
         
         # activate application
         self.main_window.mainloop()
@@ -180,32 +164,38 @@ class LeapList():
     # TODO: these could probably be consolidated more efficiently but it works well enough for now
 
     # opens today frame
-    def today(self):
-        for frame in self.frames:
-            frame.pack_forget()
-        self.today.pack(fill="both", expand=True)
-        self.add_task_button = ttk.Button(self.today.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-        self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
+    def open_today(self):
+        if self.open_frame != self.today:
+            self.open_frame.pack_forget()
+            self.today.pack(fill="both", expand=True)
+            self.open_frame = self.today
+            self.add_task_button.pack_forget()
+            self.add_task_button = ttk.Button(self.today.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
+            self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
 
     # opens upcoming frame
-    def upcoming(self):
-        for frame in self.frames:
-            frame.pack_forget()
-        self.upcoming.pack(fill="both", expand=True)
-        self.add_task_button = ttk.Button(self.upcoming.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-        self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
+    def open_upcoming(self):
+        if self.open_frame != self.upcoming:
+            self.open_frame.pack_forget()
+            self.upcoming.pack(fill="both", expand=True)
+            self.open_frame = self.upcoming
+            self.add_task_button.pack_forget()
+            self.add_task_button = ttk.Button(self.upcoming.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
+            self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
 
     # opens completed frame
-    def completed(self):
-        for frame in self.frames:
-            frame.pack_forget()
-        self.completed.pack(fill="both", expand=True)
+    def open_completed(self):
+        if self.open_frame != self.completed:
+            self.open_frame.pack_forget()
+            self.completed.pack(fill="both", expand=True)
+            self.open_frame = self.completed
 
     # opens productivity frame
-    def productivity(self):
-        for frame in self.frames:
-            frame.pack_forget()
-        self.productivity.pack(fill="both", expand=True)
+    def open_productivity(self):
+        if self.open_frame != self.productivity:
+            self.open_frame.pack_forget()
+            self.productivity.pack(fill="both", expand=True)
+            self.open_frame = self.productivity
 
     # quits application
     def quit(self):
