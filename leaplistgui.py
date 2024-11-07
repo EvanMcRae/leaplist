@@ -56,7 +56,7 @@ class LeapList():
          # create window
         self.main_window = tkinter.Tk()
         self.main_window.title('LeapList')
-        self.main_window.resizable(False, False) # disables resizing
+        self.main_window.resizable(False, False)
         self.main_window.geometry('1275x720')
         self.main_window.config(bg = '#fff')
         self.enter_task_frame = None
@@ -64,6 +64,7 @@ class LeapList():
         self.style = ttk.Style()
         self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
         self.style.configure('Selected.TLabel', foreground = '#fff', background = '#605d60')
+        self.style.configure('AddButton.TButton', padding = (5, 5, 5, 5), background = '#363237')
 
         #### TOPBAR ####
 
@@ -78,7 +79,7 @@ class LeapList():
         # create logo
         self.logo_label = tkinter.Label(self.top_bar, image = self.logo_photo, bg = '#363237', cursor = 'hand2')
         self.logo_label.place(x = 15, y = 15)
-        self.logo_label.bind("<Button-1>", self.on_logo_click) # click handling could be used instead of buttons maybe?
+        self.logo_label.bind("<Button-1>", self.on_logo_click)
 
         #### SIDEBAR ####
 
@@ -121,32 +122,9 @@ class LeapList():
         # today frame
         self.today = ScrollableFrame(self.content_frame)
         self.today.pack(fill="both", expand=True)
-        self.current_frame = self.today
-        
         self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-
-        # add task button
-        self.add_task_button = ttk.Button(self.today.footer, text = 'Add Task', command = self.enter_task, cursor = 'hand2')
-
-        #user input implementation        
-        self.user_entry = tkinter.Entry(self.today.footer)
-        self.user_entry.config(font=('Comic Sans MS', 15))       
-        #hexadecimal for font color
-        self.user_entry.config(bg='#fff')
-        self.user_entry.config(fg='#00ff00')
-
-        #We can always disable the text box when we don't want users to type anything.
-        #self.user_entry.config(state= 'disabled')
-
-        #does not limit amount of characters passed; limits amount of characters displayed
-        self.user_entry.config(width=25)
-        self.user_entry.pack(pady = 10)
-        self.user_entry.focus_set()
-
-        #add task button
-        self.add_task_button = ttk.Button(self.today.footer, text='Add Task', command=self.enter_task, cursor="hand2")
-        self.add_task_button.pack(anchor = 'center', side = 'bottom', pady = 10)
+        self.current_frame = self.today
 
         # upcoming frame
         self.upcoming = ScrollableFrame(self.content_frame)
@@ -163,6 +141,30 @@ class LeapList():
         self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         
+        # add task frame
+        self.add_task_frame = tkinter.Frame(self.today.footer, bg = '#363237')
+        self.add_task_frame.pack()
+
+        # user input
+        self.user_entry = tkinter.Entry(self.add_task_frame)
+        self.user_entry.config(font=('Comic Sans MS', 15))
+
+        # hexadecimal for font color
+        self.user_entry.config(bg='#fff')
+        self.user_entry.config(fg='#00ff00')
+
+        #We can always disable the text box when we don't want users to type anything.
+        #self.user_entry.config(state= 'disabled')
+
+        #does not limit amount of characters passed; limits amount of characters displayed
+        self.user_entry.config(width=25)
+        self.user_entry.grid(column = 0, row =0 , padx = (10, 10), pady = 10)
+        self.user_entry.focus_set()
+
+        # add task button
+        self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2')
+        self.add_task_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+
         # activate application
         self.main_window.mainloop()
 
