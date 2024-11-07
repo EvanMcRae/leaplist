@@ -47,10 +47,6 @@ class ScrollableFrame(ttk.Frame):
         style = ttk.Style()
         style.configure("LeapList.TFrame", background = bg_color)
 
-        # create footer frame (non-scrollable area)
-        self.footer = tkinter.Frame(self, background = '#363237')
-        self.footer.pack(side = 'bottom', fill = 'x')
-
 class LeapList():
     def __init__(self):
          # create window
@@ -114,11 +110,14 @@ class LeapList():
         self.quit_button.bind('<Button-1>', self.quit)
 
         #### CONTENT ####
-
         # content frame (contains all other frames below, allows switching between)
         self.content_frame = tkinter.Frame(self.main_window, bg = '#8e9294', width = 650, height = 690)
         self.content_frame.pack(fill = 'both', expand = True)
         
+        # create footer frame (non-scrollable area)
+        self.footer = tkinter.Frame(self.content_frame, background = '#363237')
+        self.footer.pack(side = 'bottom', fill = 'x')
+
         # today frame
         self.today = ScrollableFrame(self.content_frame)
         self.today.pack(fill="both", expand=True)
@@ -142,7 +141,7 @@ class LeapList():
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         
         # add task frame
-        self.add_task_frame = tkinter.Frame(self.today.footer, bg = '#363237')
+        self.add_task_frame = tkinter.Frame(self.footer, bg = '#363237')
         self.add_task_frame.pack()
 
         # user input
@@ -158,7 +157,7 @@ class LeapList():
 
         #does not limit amount of characters passed; limits amount of characters displayed
         self.user_entry.config(width=25)
-        self.user_entry.grid(column = 0, row =0 , padx = (10, 10), pady = 10)
+        self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
         self.user_entry.focus_set()
 
         # add task button
@@ -171,15 +170,19 @@ class LeapList():
     #### SIDEBAR BUTTON COMMANDS ####
     def open_today(self, event):
         self.open_frame(self.today, self.today_button)
+        self.add_task_frame.pack()
 
     def open_upcoming(self, event):
         self.open_frame(self.upcoming, self.upcoming_button)
+        self.add_task_frame.pack()
 
     def open_completed(self, event):
         self.open_frame(self.completed, self.completed_button)
+        self.add_task_frame.pack_forget()
 
     def open_productivity(self, event):
         self.open_frame(self.productivity, self.productivity_button)
+        self.add_task_frame.pack_forget()
 
     def open_frame(self, frame, button):
         if self.open_frame != frame:
