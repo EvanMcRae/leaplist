@@ -13,7 +13,7 @@ int task = 1
 
 # For Daily Task ---------------------------------------------------------------------------------------------------
 # Determine if task is on current day for daily tasks
-if(data["Work Date"] == current_date.strftime("%Y-%m-%d")){
+if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
 	# Calculate how much of the task is completed
 	percentage = data["Completion Time"] / data["Time to Complete"]
 	# Plot Data in Bar Graph form
@@ -30,22 +30,22 @@ plt.ylabel("Percentage Completed")
 # Show the plot
 plt.show()
 
-# For Weekly Tasks -------------------------------------------------------------------------------------------
+# For Monthly Tasks -------------------------------------------------------------------------------------------
 # Determine if task is on current data for monthly tasks
-if(data["Work Date"][5:6] == current_date.strftime("%Y-%m-%d")[5:6]){
+if(data["Work Date"][5:6] == current_date.strftime("%Y-%m-%d")[5:6]):
 	int amount = 0
  	int completed = 0
-	if(data["Work Date"] == current_date.strftime("%Y-%m-%d")){
+	if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
  		amount += 1;
-	}
- 	if (task is completed){
+	
+ 	if (task is completed):
   		completed += 1;
-  	}
+  	
    		# Plot Data in Bar Graph form
 		plt.bar(task, percentage, color='limegreen')
 	 	# Label the Bar
 	 	plt.text(task, value + 1, data["Task Name"], ha = 'center', va = 'bottom')
-}
+
 
 # Label Plot
 plt.title("Weekly Tasks")
@@ -55,3 +55,29 @@ plt.ylabel("Amount of Tasks Completed")
 # Show the plot
 plt.show()
 
+
+# For Specific Tag Tasks -------------------------------------------------------------------------------------------
+# Determine if task is on current data for monthly tasks
+if(data["Tags"].find(tag_choice) != -1):
+	int amount = 0
+ 	int completed = 0
+
+	if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
+ 		amount += 1;
+	
+ 	if (task is completed):
+  		completed += 1;
+  	
+   		# Plot Data in Bar Graph form
+		plt.bar(task, percentage, color='limegreen')
+	 	# Label the Bar
+	 	plt.text(task, value + 1, data["Task Name"], ha = 'center', va = 'bottom')
+
+
+# Label Plot
+plt.title("Weekly Tasks")
+plt.xlabel("Day")
+plt.ylabel("Amount of Tasks Completed")
+
+# Show the plot
+plt.show()
