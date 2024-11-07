@@ -12,49 +12,56 @@ import leaplistcsv as llcsv
 #     windll.shcore.SetProcessDpiAwareness(1)
 
 class ScrollableFrame(ttk.Frame):
-    def __init__(self, container, bg_color = '#8e9294'):
+    def __init__(self, container):
         super().__init__(container)
 
-        # create frame for scrollable content
-        content_frame = ttk.Frame(self)
-        content_frame.pack(side = 'top', fill = 'both', expand = True)
-
         # create canvas widget with background color, no border or highlight
-        canvas = tkinter.Canvas(content_frame, bg = bg_color, highlightthickness = 0, bd = 0)
-        scrollbar = ttk.Scrollbar(content_frame, orient = 'vertical', command = canvas.yview)
+        self.canvas = tkinter.Canvas(self, bg = '#8e9294', highlightthickness = 0, bd = 0)
+        self.canvas.pack(side = 'left', fill = 'both', expand = True)
 
-        # create scrollable frame inside canvas to hold widgets
-        scrollable_frame = ttk.Frame(canvas, style = 'LeapList.TFrame')
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox('all'))
-        )
-
-        # create window inside canvas to hold scrollable frame
-        self.scrollable_window = canvas.create_window((0, 0), window = scrollable_frame, anchor = 'nw')
-
-        # set yscrollcommand to connect canvas with scrollbar
-        canvas.configure(yscrollcommand = scrollbar.set)
-
-        # pack canvas and scrollbar
-        canvas.pack(side = 'left', fill = 'both', expand = True)
+        # create scrollbar
+        scrollbar = ttk.Scrollbar(self, orient = 'vertical', command = self.canvas.yview)
         scrollbar.pack(side = 'right', fill = 'y')
 
-        # set scrollable frame as class attribute to add widgets later
-        self.scrollable_frame = scrollable_frame
+        # attach scrollbar to canvas
+        self.canvas.configure(yscrollcommand = scrollbar.set)
+
+        # create scrollable frame inside canvas to hold widgets
+        self.scrollable_frame = ttk.Frame(self.canvas, style = 'LeapList.TFrame')
+        self.canvas.create_window((0, 0), window = self.scrollable_frame, anchor = 'nw')
 
         # set scrollable frame background
         style = ttk.Style()
-        style.configure("LeapList.TFrame", background = bg_color)
+        style.configure("LeapList.TFrame", background = '#8e9294')
+    
+    def bind_events(self):
+        self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
+        self.scrollable_frame.bind('<Configure>', self._update_scrollregion)
+    
+    def unbind_events(self):
+        self.canvas.unbind('<MouseWheel>')
+        self.scrollable_frame.unbind('<Configure>')
 
-class LeapList():
+    # handle mouse wheel scrolling
+    def _on_mousewheel(self, event):
+        if event.delta < 0:
+            self.canvas.yview_scroll(1, 'units')
+        elif event.delta > 0:
+            self.canvas.yview_scroll(-1, 'units')
+
+    # update scroll region of canvas when frame size changes
+    def _update_scrollregion(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox('all'))
+
+class LeapList(tkinter.Tk):
     def __init__(self):
-         # create window
-        self.main_window = tkinter.Tk()
-        self.main_window.title('LeapList')
-        self.main_window.resizable(False, False)
-        self.main_window.geometry('1275x720')
-        self.main_window.config(bg = '#fff')
+        super().__init__()
+
+        # create window
+        self.title('LeapList')
+        self.resizable(False, False)
+        self.geometry('1275x720')
+        self.config(bg = '#fff')
         self.enter_task_frame = None
         
         self.style = ttk.Style()
@@ -69,7 +76,7 @@ class LeapList():
         self.logo_photo = ImageTk.PhotoImage(self.logo)
 
         # create top bar frame
-        self.top_bar = tkinter.Frame(self.main_window, bg = '#363237', relief = "sunken", width = 1275, height = 60)
+        self.top_bar = tkinter.Frame(self, bg = '#363237', relief = "sunken", width = 1275, height = 60)
         self.top_bar.pack(ipady = 15)
 
         # create logo
@@ -80,7 +87,7 @@ class LeapList():
         #### SIDEBAR ####
 
         # create sidebar frame
-        self.sidebar = tkinter.Frame(self.main_window, bg = '#605d60', width = 30, height = 690)
+        self.sidebar = tkinter.Frame(self, bg = '#605d60', width = 30, height = 690)
         self.sidebar.pack(side = 'left', fill = 'both')
 
         # create today button
@@ -109,34 +116,31 @@ class LeapList():
         self.quit_button.pack(fill = 'x', padx = 15, pady = 15)
         self.quit_button.bind('<Button-1>', self.quit)
 
-        #### CONTENT ####
-        # content frame (contains all other frames below, allows switching between)
-        self.content_frame = tkinter.Frame(self.main_window, bg = '#8e9294', width = 650, height = 690)
-        self.content_frame.pack(fill = 'both', expand = True)
-        
+        #### CONTENT ####        
         # create footer frame (non-scrollable area)
-        self.footer = tkinter.Frame(self.content_frame, background = '#363237')
+        self.footer = tkinter.Frame(self, background = '#363237')
         self.footer.pack(side = 'bottom', fill = 'x')
 
         # today frame
-        self.today = ScrollableFrame(self.content_frame)
+        self.today = ScrollableFrame(self)
+        self.today.bind_events()
         self.today.pack(fill="both", expand=True)
         self.today_label = tkinter.Label(self.today.scrollable_frame, text = 'Today', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.today_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         self.current_frame = self.today
 
         # upcoming frame
-        self.upcoming = ScrollableFrame(self.content_frame)
+        self.upcoming = ScrollableFrame(self)
         self.upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = 'Upcoming', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.upcoming_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # completed frame
-        self.completed = ScrollableFrame(self.content_frame)
+        self.completed = ScrollableFrame(self)
         self.completed_label = tkinter.Label(self.completed.scrollable_frame, text = 'Completed', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.completed_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         # productivity frame
-        self.productivity = ScrollableFrame(self.content_frame)
+        self.productivity = ScrollableFrame(self)
         self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         
@@ -168,9 +172,6 @@ class LeapList():
         self.today_tasks = []
         self.upcoming_tasks = []
 
-        # activate application
-        self.main_window.mainloop()
-
     #### SIDEBAR BUTTON COMMANDS ####
     def open_today(self, event):
         if self.current_frame != self.today:
@@ -181,7 +182,6 @@ class LeapList():
         if self.current_frame != self.upcoming:
             self.open_frame(self.upcoming, self.upcoming_button)
             self.add_task_frame.pack()
-            
 
     def open_completed(self, event):
         if self.current_frame != self.completed:
@@ -194,16 +194,18 @@ class LeapList():
             self.add_task_frame.pack_forget()
 
     def open_frame(self, frame, button):
+        self.current_frame.unbind_events()
         self.current_frame.pack_forget()
         frame.pack(fill="both", expand=True)
         self.current_frame = frame
+        self.current_frame.bind_events()
         self.selected_button.config(style = 'Sidebar.TLabel')
         self.selected_button = button
         self.selected_button.config(style = 'Selected.TLabel')
 
     # quits application
     def quit(self, event):
-        self.main_window.destroy()
+        self.destroy()
 
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
@@ -237,7 +239,7 @@ class LeapList():
     def on_logo_click(self, event):
         print('clicked me!')
 
-
-
 # create the application
-LeapList = LeapList()
+if __name__ == "__main__":
+    LeapList = LeapList()
+    LeapList.mainloop()
