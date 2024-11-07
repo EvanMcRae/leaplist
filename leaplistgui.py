@@ -164,34 +164,42 @@ class LeapList():
         self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2')
         self.add_task_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
 
+        # tasks lists
+        self.today_tasks = []
+        self.upcoming_tasks = []
+
         # activate application
         self.main_window.mainloop()
 
     #### SIDEBAR BUTTON COMMANDS ####
     def open_today(self, event):
-        self.open_frame(self.today, self.today_button)
-        self.add_task_frame.pack()
+        if self.current_frame != self.today:
+            self.open_frame(self.today, self.today_button)
+            self.add_task_frame.pack()
 
     def open_upcoming(self, event):
-        self.open_frame(self.upcoming, self.upcoming_button)
-        self.add_task_frame.pack()
+        if self.current_frame != self.upcoming:
+            self.open_frame(self.upcoming, self.upcoming_button)
+            self.add_task_frame.pack()
+            
 
     def open_completed(self, event):
-        self.open_frame(self.completed, self.completed_button)
-        self.add_task_frame.pack_forget()
+        if self.current_frame != self.completed:
+            self.open_frame(self.completed, self.completed_button)
+            self.add_task_frame.pack_forget()
 
     def open_productivity(self, event):
-        self.open_frame(self.productivity, self.productivity_button)
-        self.add_task_frame.pack_forget()
+        if self.current_frame != self.productivity:
+            self.open_frame(self.productivity, self.productivity_button)
+            self.add_task_frame.pack_forget()
 
     def open_frame(self, frame, button):
-        if self.open_frame != frame:
-            self.current_frame.pack_forget()
-            frame.pack(fill="both", expand=True)
-            self.current_frame = frame
-            self.selected_button.config(style = 'Sidebar.TLabel')
-            self.selected_button = button
-            self.selected_button.config(style = 'Selected.TLabel')
+        self.current_frame.pack_forget()
+        frame.pack(fill="both", expand=True)
+        self.current_frame = frame
+        self.selected_button.config(style = 'Sidebar.TLabel')
+        self.selected_button = button
+        self.selected_button.config(style = 'Selected.TLabel')
 
     # quits application
     def quit(self, event):
@@ -208,7 +216,16 @@ class LeapList():
         #test call to function in csv.py
         llcsv.new_task(task, task, 1, 2, 3, task)
 
+        # TODO: Only add to one of these based on date
+        today_label = tkinter.Label(self.today.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
+        today_label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
+        self.today_tasks.append(today_label)
 
+        upcoming_label = tkinter.Label(self.upcoming.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
+        upcoming_label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
+        self.upcoming_tasks.append(upcoming_label)
+
+        # TODO: Is this still how we want to do things? To discuss tomorrow
         #if there's already a task entry box open, don't open another
         if self.enter_task_frame:
             return
