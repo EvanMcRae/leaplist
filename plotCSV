@@ -7,19 +7,19 @@ import matplotlib.pyplot as plt
 # Load CSV file
 data = pd.read_csv("leap_list.csv")
 
-int task = 1
+task = 1
 
 #Determine if Daily, Weekly, or Monthly View is wanted
 
 # For Daily Task ---------------------------------------------------------------------------------------------------
 # Determine if task is on current day for daily tasks
-if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
+if(data["Work Date"].iloc[0] == current_date.strftime("%Y-%m-%d"))):
 	# Calculate how much of the task is completed
-	percentage = data["Completion Time"] / data["Time to Complete"]
+	percentage = data["Completion Time"].iloc[0] / data["Time to Complete"].iloc[0]
 	# Plot Data in Bar Graph form
 	plt.bar(task, percentage, color='limegreen')
  	# Label the Bar
- 	plt.text(task, value + 1, data["Task Name"], ha = 'center', va = 'bottom')
+    	plt.text(task, percentage + 0.05, data["Task Name"].iloc[0], ha='center', va='bottom')
 }
 
 # Label Plot
@@ -57,10 +57,12 @@ plt.show()
 
 
 # For Specific Tag Tasks -------------------------------------------------------------------------------------------
+#assign which tage graph is being made for
+tag_choice = "Homework";
 # Determine if task is on current data for monthly tasks
 if(data["Tags"].find(tag_choice) != -1):
-	int amount = 0
- 	int completed = 0
+	amount = 0
+ 	completed = 0
 
 	if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
  		amount += 1;
@@ -71,13 +73,13 @@ if(data["Tags"].find(tag_choice) != -1):
    		# Plot Data in Bar Graph form
 		plt.bar(task, percentage, color='limegreen')
 	 	# Label the Bar
-	 	plt.text(task, value + 1, data["Task Name"], ha = 'center', va = 'bottom')
+	 	plt.text(task, completed + 0.05, data["Task Name"].iloc[0], ha='center', va='bottom')
 
 
 # Label Plot
-plt.title("Weekly Tasks")
-plt.xlabel("Day")
-plt.ylabel("Amount of Tasks Completed")
+plt.title("Tag Specific Tasks")
+plt.xlabel(tag_choice)
+plt.ylabel("Amount of Specific Tag Tasks Completed")
 
 # Show the plot
 plt.show()
