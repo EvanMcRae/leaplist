@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load CSV file
-data = pd.read_csv("leap_list.csv")
+data = pd.read_csv("LeapList.csv")
 
 task = 1
 
@@ -13,7 +13,7 @@ task = 1
 
 # For Daily Task ---------------------------------------------------------------------------------------------------
 # Determine if task is on current day for daily tasks
-if(data["Work Date"].iloc[0] == current_date.strftime("%Y-%m-%d"))):
+if(data["Work Date"] == current_date.strftime("%Y-%m-%d"))):
 	# Calculate how much of the task is completed
 	percentage = data["Completion Time"].iloc[0] / data["Time to Complete"].iloc[0]
 	# Plot Data in Bar Graph form
@@ -32,19 +32,7 @@ plt.show()
 
 # For Monthly Tasks -------------------------------------------------------------------------------------------
 # Determine if task is on current data for monthly tasks
-if(data["Work Date"][5:6] == current_date.strftime("%Y-%m-%d")[5:6]):
-	int amount = 0
- 	int completed = 0
-	if(data["Work Date"] == current_date.strftime("%Y-%m-%d")):
- 		amount += 1;
-	
- 	if (task is completed):
-  		completed += 1;
-  	
-   		# Plot Data in Bar Graph form
-		plt.bar(task, percentage, color='limegreen')
-	 	# Label the Bar
-	 	plt.text(task, value + 1, data["Task Name"], ha = 'center', va = 'bottom')
+
 
 
 # Label Plot
