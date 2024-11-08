@@ -5,6 +5,7 @@ from PIL import ImageTk, Image
 import os
 import sys
 import leaplistcsv as llcsv
+import datetime
 
 # fixes some ugly blurring on windows
 # if sys.platform == "win32":
@@ -179,9 +180,21 @@ class LeapList(tkinter.Tk):
         self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
         self.user_entry.focus_set()
 
+        # add deadline button
+        self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2')
+        self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+
+        # add work date
+        self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2')
+        self.add_work_date_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+
         # add task button
         self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2')
-        self.add_task_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+        self.add_task_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
+
+
+        # finish calculating amount of time spent on a task 
+        # self.time_completed = self.date_frame - self.date_entry / not needed
 
         # tasks lists
         self.today_tasks = []
@@ -222,16 +235,48 @@ class LeapList(tkinter.Tk):
     def quit(self, event):
         self.destroy()
 
+    def create_calendar(self):
+        self.geometry("400x400")
+
+        #add calendar
+        self.cal = tkinter.Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
+        self.cal.pack(pady = 20)
+
+        # self.cal.pack_forget()
+
+        #get date value
+        date = tkinter.Label(self, text = "")
+        date.pack(pady = 20)
+
+    # TODO: create "close calendar" function to pack_forget calendar
+
+    #function for entering date
+    def enter_workdate(self):
+        self.create_calendar()
+        
+        #date value that user passes in
+        self.work_date = self.cal.get_date()
+
+    def enter_deadlinedate(self):
+        self.create_calendar()
+        
+        self.deadline_date = self.cal.get_date()
+
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
         #testing something out for userinput -DAB
         #retrieve text from user entry
         task = self.user_entry.get()
         #printing for proof of concept
-        print(task)
 
+        # TODO: Placeholder!! need ways to pass these in
+        description = "" # optional
+        deadline = "" # optional
+        priority = "" # optional
+        tags = "" # optional
+        
         #test call to function in csv.py
-        llcsv.new_task(task, task, 1, 2, 3, task)
+        llcsv.new_task(task, description, self.work_date, deadline, priority, tags)
 
         # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
         label = tkinter.Label(self.current_frame.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
@@ -252,7 +297,8 @@ class LeapList(tkinter.Tk):
 
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
-        print('clicked me!')
+        print('clicked me!')    
+
 
 # create the application
 if __name__ == '__main__':
