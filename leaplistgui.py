@@ -6,6 +6,7 @@ import os
 import sys
 import leaplistcsv as llcsv
 import datetime
+from tkcalendar import Calendar
 
 # fixes some ugly blurring on windows
 # if sys.platform == "win32":
@@ -181,20 +182,23 @@ class LeapList(tkinter.Tk):
         self.user_entry.focus_set()
 
         # add deadline button
-        self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2')
+        self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
         self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
 
         # add work date
-        self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2')
-        self.add_work_date_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+        self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+        self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
         # add task button
-        self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2')
-        self.add_task_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
+        self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+        self.add_task_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
 
-
-        # finish calculating amount of time spent on a task 
-        # self.time_completed = self.date_frame - self.date_entry / not needed
+        # calendar + default work date and deadline
+        # TODO do we want these to be the default?
+        self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
+        self.calendar_open = False
+        self.work_date = self.calendar.get_date()
+        self.deadline = self.calendar.get_date()
 
         # tasks lists
         self.today_tasks = []
@@ -235,32 +239,50 @@ class LeapList(tkinter.Tk):
     def quit(self, event):
         self.destroy()
 
-    def create_calendar(self):
-        self.geometry("400x400")
+    def open_calendar(self, x_pos, y_pos, date):
+        date_key = date.split('-')
+        self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
+        self.calendar.place(x = x_pos, y = y_pos)
+        self.calendar_open = True
 
-        #add calendar
-        self.cal = tkinter.Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
-        self.cal.pack(pady = 20)
-
-        # self.cal.pack_forget()
-
-        #get date value
-        date = tkinter.Label(self, text = "")
-        date.pack(pady = 20)
-
-    # TODO: create "close calendar" function to pack_forget calendar
+    def close_calendar(self):
+        self.calendar.destroy()
+        self.calendar_open = False
 
     #function for entering date
     def enter_workdate(self):
-        self.create_calendar()
-        
-        #date value that user passes in
-        self.work_date = self.cal.get_date()
+        if not self.calendar_open:
+            self.open_calendar(785, 475, self.work_date)
+            self.add_deadline_button.config(state = 'disabled')
+            self.add_deadline_button.config(cursor = 'arrow')
+            self.add_task_button.config(state = 'disabled')
+            self.add_task_button.config(cursor = 'arrow')
+            self.add_work_date_button.config(text = 'Confirm Work Date')
+        else:
+            self.work_date = self.calendar.get_date()
+            self.close_calendar()
+            self.add_deadline_button.config(state = 'normal')
+            self.add_deadline_button.config(cursor = 'hand2')
+            self.add_task_button.config(state = 'normal')
+            self.add_task_button.config(cursor = 'hand2')
+            self.add_work_date_button.config(text = 'Add Work Date')
 
     def enter_deadlinedate(self):
-        self.create_calendar()
-        
-        self.deadline_date = self.cal.get_date()
+        if not self.calendar_open:
+            self.open_calendar(640, 475, self.deadline)
+            self.add_work_date_button.config(state = 'disabled')
+            self.add_work_date_button.config(cursor = 'arrow')
+            self.add_task_button.config(state = 'disabled')
+            self.add_task_button.config(cursor = 'arrow')
+            self.add_deadline_button.config(text = 'Confirm Deadline')
+        else:
+            self.deadline = self.calendar.get_date()
+            self.close_calendar()
+            self.add_work_date_button.config(state = 'normal')
+            self.add_work_date_button.config(cursor = 'hand2')
+            self.add_task_button.config(state = 'normal')
+            self.add_task_button.config(cursor = 'hand2')
+            self.add_deadline_button.config(text = 'Add Deadline')
 
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
@@ -271,12 +293,11 @@ class LeapList(tkinter.Tk):
 
         # TODO: Placeholder!! need ways to pass these in
         description = "" # optional
-        deadline = "" # optional
         priority = "" # optional
         tags = "" # optional
         
         #test call to function in csv.py
-        llcsv.new_task(task, description, self.work_date, deadline, priority, tags)
+        llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
 
         # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
         label = tkinter.Label(self.current_frame.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
@@ -297,8 +318,7 @@ class LeapList(tkinter.Tk):
 
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
-        print('clicked me!')    
-
+        print('clicked me!')
 
 # create the application
 if __name__ == '__main__':
