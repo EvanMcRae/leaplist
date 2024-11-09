@@ -180,6 +180,7 @@ class LeapList(tkinter.Tk):
         self.user_entry.config(width=25)
         self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
         self.user_entry.focus_set()
+        self.user_entry.bind("<KeyRelease>", self.on_type)
 
         # add deadline button
         self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
@@ -190,7 +191,7 @@ class LeapList(tkinter.Tk):
         self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
         # add task button
-        self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+        self.add_task_button = ttk.Button(self.add_task_frame, text = 'Add Task', command = self.enter_task, style = 'AddButton.TButton', state = 'disabled', cursor = 'arrow', width = 20)
         self.add_task_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
 
         # calendar + default work date and deadline
@@ -244,27 +245,36 @@ class LeapList(tkinter.Tk):
         self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
         self.calendar.place(x = x_pos, y = y_pos)
         self.calendar_open = True
+        self.add_task_button.config(state = 'disabled')
+        self.add_task_button.config(cursor = 'arrow')
 
     def close_calendar(self):
         self.calendar.destroy()
         self.calendar_open = False
+        if len(self.user_entry.get()) > 0:
+            self.add_task_button.config(state = 'normal')
+            self.add_task_button.config(cursor = 'hand2')
 
-    #function for entering date
+    #functions for entering data
+    def on_type(self, event):
+        if len(self.user_entry.get()) > 0 and not self.calendar_open:
+            self.add_task_button.config(state = 'normal')
+            self.add_task_button.config(cursor = 'hand2')
+        else:
+            self.add_task_button.config(state = 'disabled')
+            self.add_task_button.config(cursor = 'arrow')
+
     def enter_workdate(self):
         if not self.calendar_open:
             self.open_calendar(785, 475, self.work_date)
             self.add_deadline_button.config(state = 'disabled')
             self.add_deadline_button.config(cursor = 'arrow')
-            self.add_task_button.config(state = 'disabled')
-            self.add_task_button.config(cursor = 'arrow')
             self.add_work_date_button.config(text = 'Confirm Work Date')
         else:
             self.work_date = self.calendar.get_date()
             self.close_calendar()
             self.add_deadline_button.config(state = 'normal')
             self.add_deadline_button.config(cursor = 'hand2')
-            self.add_task_button.config(state = 'normal')
-            self.add_task_button.config(cursor = 'hand2')
             self.add_work_date_button.config(text = 'Add Work Date')
 
     def enter_deadlinedate(self):
@@ -272,16 +282,12 @@ class LeapList(tkinter.Tk):
             self.open_calendar(640, 475, self.deadline)
             self.add_work_date_button.config(state = 'disabled')
             self.add_work_date_button.config(cursor = 'arrow')
-            self.add_task_button.config(state = 'disabled')
-            self.add_task_button.config(cursor = 'arrow')
             self.add_deadline_button.config(text = 'Confirm Deadline')
         else:
             self.deadline = self.calendar.get_date()
             self.close_calendar()
             self.add_work_date_button.config(state = 'normal')
             self.add_work_date_button.config(cursor = 'hand2')
-            self.add_task_button.config(state = 'normal')
-            self.add_task_button.config(cursor = 'hand2')
             self.add_deadline_button.config(text = 'Add Deadline')
 
     #brings up a box to add a task and notes if wanted
