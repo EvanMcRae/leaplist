@@ -99,9 +99,18 @@ def task_completed():
     # the data vis will have to look at this column and if blank, exclude from the graph
     # will probably want to accept hours and mins
     # this is also asked for after a task is marked complete
-    time_to_complete = input("Enter the time it took to complete the task(optional): ")
+    ##I want to comment these lines out for now - DAB
+    
+    #time_to_complete = input("Enter the time it took to complete the task(optional): ")
     #generated when item is marked as complete by the user
-    completion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    #remove last row from csv file
+    df = pd.read_csv(file_path)
+    df = df.iloc[:-1]
+    df.to_csv(file_path, index=False)
+
+
+    #completion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pass
 
 #testing and putting in several tasks

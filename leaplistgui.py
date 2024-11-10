@@ -182,6 +182,7 @@ class LeapList(tkinter.Tk):
         self.user_entry.focus_set()
         self.user_entry.bind("<KeyRelease>", self.on_type)
 
+
         # add deadline button
         self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
         self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
@@ -200,6 +201,18 @@ class LeapList(tkinter.Tk):
         self.calendar_open = False
         self.work_date = self.calendar.get_date()
         self.deadline = self.calendar.get_date()
+
+
+        # completed task
+            # you need a frame
+        self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
+        self.remove_task_frame.pack()
+            # a button
+        self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
+        self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
+
+        #after user entry, I want the ability to remove task 
+        # placed in on_type
 
         # tasks lists
         self.today_tasks = []
@@ -260,9 +273,13 @@ class LeapList(tkinter.Tk):
         if len(self.user_entry.get()) > 0 and not self.calendar_open:
             self.add_task_button.config(state = 'normal')
             self.add_task_button.config(cursor = 'hand2')
+            # adding remove_task button state - DAB
+            self.remove_task_button.config(state = 'normal')
         else:
             self.add_task_button.config(state = 'disabled')
             self.add_task_button.config(cursor = 'arrow')
+            # adding remove_task button state - DAB
+            self.remove_task_button.config(state = 'disabled')
 
     def enter_workdate(self):
         if not self.calendar_open:
@@ -318,9 +335,20 @@ class LeapList(tkinter.Tk):
         #if there's already a task entry box open, don't open another
         if self.enter_task_frame:
             return
-
         #I still need to create the GUI for the actual input
         #Then it will save via the llcsv save_task function
+
+    #remove_task function
+    ''' 
+        desc : a simple function that only removes a task, 
+        we can call this function in later code
+        param : task  
+    '''
+    def remove_task(self):
+        #may call task complete function from leaplistcsv.py
+        llcsv.task_completed()
+        print('task removed')
+
 
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
