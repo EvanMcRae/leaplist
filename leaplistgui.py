@@ -331,6 +331,11 @@ class LeapList(tkinter.Tk):
             self.upcoming_tasks.append(label)
         self.current_frame.bind_events()
 
+
+        # Creating a check mark widget. When clicked, it will mark task as completed - DAB
+        check = tkinter.Checkbutton(self.current_frame.scrollable_frame, variable = label, onvalue= 1, offvalue = 0, command= self.remove_task)
+        check.pack()
+
         # TODO: Is this still how we want to do things? To discuss tomorrow
         #if there's already a task entry box open, don't open another
         if self.enter_task_frame:
