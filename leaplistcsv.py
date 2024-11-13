@@ -74,6 +74,7 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     df.to_csv(file_path, index=False)
 
     print("Task added!")
+    return task_ID
 
 def todays_list():
     #this function should load up the csv into the gui and filter to show tasks for todays date
@@ -91,7 +92,7 @@ def todays_list():
         for task_name in todays_tasks["Task Name"]:
             print(task_name)
 
-def task_completed():
+def task_completed(task_ID):
     #this function should allow the user to mark a task as completed
     #it should also ask for the time it took to complete the task in hrs /mins
 
@@ -111,6 +112,9 @@ def task_completed():
 
 
     #completion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    pass
+
+def remove_task(task_ID):
     pass
 
 #testing and putting in several tasks

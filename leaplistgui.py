@@ -13,6 +13,34 @@ from tkcalendar import Calendar
 #     from ctypes import windll
 #     windll.shcore.SetProcessDpiAwareness(1)
 
+# TODO: add more task functions to this
+class Task():
+    def __init(self):
+        super().__init__()
+        self.frame = tkinter.Frame()
+        self.task_id = 0
+        self.check = tkinter.Checkbutton()
+        self.label = tkinter.Label()
+    
+    #complete_task function
+    def complete_task(self):
+        #may call task complete function from leaplistcsv.py
+        llcsv.task_completed(self.task_id)
+        # TODO: move task to completed page
+        print('task completed')
+
+    #remove_task function
+    ''' 
+        desc : a simple function that only removes a task, 
+        we can call this function in later code
+        param : task  
+    '''
+    def remove_task(self):
+        #may call task complete function from leaplistcsv.py
+        llcsv.remove_task(self.task_id)
+        print('task removed')
+
+
 class ScrollableFrame(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
@@ -204,13 +232,13 @@ class LeapList(tkinter.Tk):
         self.deadline = self.calendar.get_date()
 
 
-        # completed task
-            # you need a frame
-        self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
-        self.remove_task_frame.pack()
-            # a button
-        self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
-        self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
+        # # completed task -- TODO repurpose
+        #     # you need a frame
+        # self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
+        # self.remove_task_frame.pack()
+        #     # a button
+        # self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
+        # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
 
         #after user entry, I want the ability to remove task 
         # placed in on_type
@@ -321,21 +349,26 @@ class LeapList(tkinter.Tk):
         tags = "" # optional
         
         #test call to function in csv.py
-        llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
+        newTask = Task()
+        newTask.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
 
         # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
-        label = tkinter.Label(self.current_frame.scrollable_frame, text = task, fg = 'green', bg = '#8e9294', font = ('Arial', '20'))
-        label.pack(fill = 'none', expand = False, side = 'top', anchor = 'w', ipadx = 15)
-        if self.current_frame == self.today:
-            self.today_tasks.append(label)
-        else:
-            self.upcoming_tasks.append(label)
-        self.current_frame.bind_events()
-
+        newTask.frame = tkinter.Frame(self.current_frame.scrollable_frame, bg = '#605d60')
+        newTask.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
 
         # Creating a check mark widget. When clicked, it will mark task as completed - DAB
-        check = tkinter.Checkbutton(self.current_frame.scrollable_frame, variable = label, onvalue= 1, offvalue = 0, command= self.remove_task)
-        check.pack()
+        # TODO: figure out how to store task ID and pass into remove task
+        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, command= newTask.remove_task, bg = '#605d60', activebackground = '#605d60')
+        newTask.check.pack(side = 'left')
+
+        newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
+        newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
+
+        if self.current_frame == self.today:
+            self.today_tasks.append(newTask)
+        else:
+            self.upcoming_tasks.append(newTask)
+        self.current_frame.bind_events()
 
         # TODO: Is this still how we want to do things? To discuss tomorrow
         #if there's already a task entry box open, don't open another
@@ -343,18 +376,6 @@ class LeapList(tkinter.Tk):
             return
         #I still need to create the GUI for the actual input
         #Then it will save via the llcsv save_task function
-
-    #remove_task function
-    ''' 
-        desc : a simple function that only removes a task, 
-        we can call this function in later code
-        param : task  
-    '''
-    def remove_task(self):
-        #may call task complete function from leaplistcsv.py
-        llcsv.task_completed()
-        print('task removed')
-
 
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
