@@ -82,8 +82,9 @@ class LeapList(tkinter.Tk):
         self.config(bg = '#fff')
         self.enter_task_frame = None
         
+        
         self.style = ttk.Style()
-        self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
+        # self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
         self.style.configure('Selected.TLabel', foreground = '#fff', background = '#605d60')
         self.style.configure('AddButton.TButton', padding = (5, 5, 5, 5), background = '#363237')
 
@@ -109,29 +110,29 @@ class LeapList(tkinter.Tk):
         self.sidebar.pack(side = 'left', fill = 'both')
 
         # create today button
-        self.today_button = ttk.Label(self.sidebar, text = 'Today', font = ('Arial', 30), style = 'Selected.TLabel', cursor = 'hand2')
-        self.today_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.today_button = tkinter.Label(self.sidebar, text = 'Today', font = ('Arial', 30), foreground = '#fff', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.today_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.today_button.bind('<Button-1>', self.open_today)
         self.selected_button = self.today_button
 
         # create upcoming button
-        self.upcoming_button = ttk.Label(self.sidebar, text = 'Upcoming', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
-        self.upcoming_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.upcoming_button = tkinter.Label(self.sidebar, text = 'Upcoming', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.upcoming_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.upcoming_button.bind('<Button-1>', self.open_upcoming)
 
         # create completed button
-        self.completed_button = ttk.Label(self.sidebar, text = 'Completed', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
-        self.completed_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.completed_button = tkinter.Label(self.sidebar, text = 'Completed', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.completed_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.completed_button.bind('<Button-1>', self.open_completed)
 
         # create productivity button
-        self.productivity_button = ttk.Label(self.sidebar, text = 'Productivity', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
-        self.productivity_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.productivity_button = tkinter.Label(self.sidebar, text = 'Productivity', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.productivity_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.productivity_button.bind('<Button-1>', self.open_productivity)
 
         # create quit button -- TODO move this somewhere else
-        self.quit_button = ttk.Label(self.sidebar, text = 'Quit', font = ('Arial', 30), style = 'Sidebar.TLabel', cursor = 'hand2')
-        self.quit_button.pack(fill = 'x', padx = 15, pady = 15)
+        self.quit_button = tkinter.Label(self.sidebar, text = 'Quit', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.quit_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.quit_button.bind('<Button-1>', self.quit)
 
         #### CONTENT ####        
@@ -245,9 +246,9 @@ class LeapList(tkinter.Tk):
         frame.pack(fill = 'both', expand = True)
         self.current_frame = frame
         self.current_frame.bind_events()
-        self.selected_button.config(style = 'Sidebar.TLabel')
+        self.selected_button.config(foreground = '#aaa', background = '#605d60')
         self.selected_button = button
-        self.selected_button.config(style = 'Selected.TLabel')
+        self.selected_button.config(foreground = '#fff', background = '#605d60')
 
     # quits application
     def quit(self, event):
