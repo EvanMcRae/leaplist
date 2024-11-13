@@ -303,12 +303,12 @@ class LeapList(tkinter.Tk):
             self.add_task_button.config(state = 'normal')
             self.add_task_button.config(cursor = 'hand2')
             # adding remove_task button state - DAB
-            self.remove_task_button.config(state = 'normal')
+            #self.remove_task_button.config(state = 'normal')
         else:
             self.add_task_button.config(state = 'disabled')
             self.add_task_button.config(cursor = 'arrow')
             # adding remove_task button state - DAB
-            self.remove_task_button.config(state = 'disabled')
+            #self.remove_task_button.config(state = 'disabled')
 
     def enter_workdate(self):
         if not self.calendar_open:
