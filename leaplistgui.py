@@ -62,9 +62,12 @@ class Task():
         param : task  
     '''
     def remove_task(self):
+        
         #may call task complete function from leaplistcsv.py
         llcsv.remove_task(self.task_id)
         print('task removed')
+        
+
 
 
 class ScrollableFrame(ttk.Frame):
@@ -194,6 +197,10 @@ class LeapList(tkinter.Tk):
         self.footer = tkinter.Frame(self, background = '#363237')
         self.footer.pack(side = 'bottom', fill = 'x')
 
+        #Progress bar child to footer - DAB
+        self.footer.progress = ttk.Progressbar(self, orient = 'horizontal', length = 100, mode = 'determinate')
+        self.footer.progress.pack(pady = 10)
+
         # today frame
         self.today = ScrollableFrame(self)
         self.today.pack(fill = 'both', expand = True)
@@ -308,6 +315,14 @@ class LeapList(tkinter.Tk):
     def quit(self, event):
         self.destroy()
 
+    #progress bar function
+    def progress_bar(self, numTask, numComp):
+        print('test')
+        if(numComp != 0):
+            totalPerc = (numTask/numComp) * 100
+            print(totalPerc)
+            self.footer.progress['value'] = totalPerc
+
     def open_calendar(self, x_pos, y_pos, date):
         date_key = date.split('-')
         self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
@@ -366,6 +381,7 @@ class LeapList(tkinter.Tk):
 
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
+        
         #testing something out for userinput -DAB
         #retrieve text from user entry
         task = self.user_entry.get()
@@ -380,6 +396,8 @@ class LeapList(tkinter.Tk):
         newTask = Task()
         newTask.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
 
+        #placed in a counter for task added for the progress bar - DAB
+
         # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
         newTask.frame = tkinter.Frame(self.current_frame.scrollable_frame, bg = '#605d60')
         newTask.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
@@ -389,8 +407,10 @@ class LeapList(tkinter.Tk):
         newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, command= newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
         newTask.check.pack(side = 'left')
 
+
         newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
         newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
+
 
         if self.current_frame == self.today:
             self.today_tasks.append(newTask)
@@ -405,6 +425,7 @@ class LeapList(tkinter.Tk):
         #I still need to create the GUI for the actual input
         #Then it will save via the llcsv save_task function
 
+     
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
