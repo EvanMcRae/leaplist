@@ -15,45 +15,54 @@ from tkcalendar import Calendar
 
 # TODO: add more task functions to this
 class Task():
-    def __init(self):
+    def __init__(self):
         super().__init__()
         self.frame = tkinter.Frame()
         self.task_id = 0
         self.check = tkinter.Checkbutton()
         self.label = tkinter.Label()
-    
+        self.completed = tkinter.BooleanVar()
+
+
     #complete_task function
     def complete_task(self):
 
-        #takes info from popup spinboxes and calls llcsv function
-        def confirm_completion():
-            hours = int(hours_spinbox.get())
-            minutes = int(minutes_spinbox.get())
-            llcsv.task_completed(self.task_id, hours, minutes)
-            popup.destroy()
+        if self.completed.get() == True:
+            #takes info from popup spinboxes and calls llcsv function
+            def confirm_completion():
+                hours = int(hours_spinbox.get())
+                minutes = int(minutes_spinbox.get())
+                llcsv.task_completed(self.task_id, hours, minutes)
+                popup.destroy()
+                self.check.config(state = 'active')
 
-        #using a popup for now with the spinboxes
-        popup = tkinter.Toplevel()
-        tkinter.Label(popup, text = 'How long did it take to complete this task?').pack()
+            #using a popup for now with the spinboxes
+            self.check.config(state = 'disabled')
 
-        #spinbox for hours set up
-        tkinter.Label(popup, text="Hours:").pack()
-        hours_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
-        hours_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
-        hours_spinbox.pack()
+            popup = tkinter.Toplevel()
+            tkinter.Label(popup, text = 'How long did it take to complete this task?').pack()
 
-        #spinbox for minutes set up
-        tkinter.Label(popup, text="Minutes:").pack()
-        minutes_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
-        minutes_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
-        minutes_spinbox.pack()
+            #spinbox for hours set up
+            tkinter.Label(popup, text="Hours:").pack()
+            hours_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
+            hours_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
+            hours_spinbox.pack()
 
-        #when user hits 'ok' button, call the llcsv function to update based on input
-        ok_button = tkinter.Button(popup, text="OK", command=confirm_completion)
-        ok_button.pack()
+            #spinbox for minutes set up
+            tkinter.Label(popup, text="Minutes:").pack()
+            minutes_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
+            minutes_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
+            minutes_spinbox.pack()
 
-        # TODO: move task to completed page
-        print('task completed')
+            #when user hits 'ok' button, call the llcsv function to update based on input
+            ok_button = tkinter.Button(popup, text="OK", command=confirm_completion)
+            ok_button.pack()
+
+            # TODO: move task to completed page
+            print('task completed')
+        else:
+            # TODO: remove task from completed list and move it back to appropriate page
+            pass
 
     #remove_task function
     ''' 
@@ -66,8 +75,6 @@ class Task():
         #may call task complete function from leaplistcsv.py
         llcsv.remove_task(self.task_id)
         print('task removed')
-        
-
 
 
 class ScrollableFrame(ttk.Frame):
@@ -229,11 +236,11 @@ class LeapList(tkinter.Tk):
 
         # user input
         self.user_entry = tkinter.Entry(self.add_task_frame)
-        self.user_entry.config(font = ('Comic Sans MS', 15))
+        self.user_entry.config(font = ('Arial', 15))
 
         # hexadecimal for font color
         self.user_entry.config(bg = '#fff')
-        self.user_entry.config(fg = '#00ff00')
+        self.user_entry.config(fg = '#000')
 
         #We can always disable the text box when we don't want users to type anything.
         #self.user_entry.config(state= 'disabled')
@@ -403,10 +410,8 @@ class LeapList(tkinter.Tk):
         newTask.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
 
         # Creating a check mark widget. When clicked, it will mark task as completed - DAB
-        # TODO: figure out how to store task ID and pass into remove task
-        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, command= newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
+        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, variable = newTask.completed, command = newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
         newTask.check.pack(side = 'left')
-
 
         newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
         newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
