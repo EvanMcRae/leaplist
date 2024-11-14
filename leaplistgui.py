@@ -24,8 +24,34 @@ class Task():
     
     #complete_task function
     def complete_task(self):
-        #may call task complete function from leaplistcsv.py
-        llcsv.task_completed(self.task_id)
+
+        #takes info from popup spinboxes and calls llcsv function
+        def confirm_completion():
+            hours = int(hours_spinbox.get())
+            minutes = int(minutes_spinbox.get())
+            llcsv.task_completed(self.task_id, hours, minutes)
+            popup.destroy()
+
+        #using a popup for now with the spinboxes
+        popup = tkinter.Toplevel()
+        tkinter.Label(popup, text = 'How long did it take to complete this task?').pack()
+
+        #spinbox for hours set up
+        tkinter.Label(popup, text="Hours:").pack()
+        hours_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
+        hours_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
+        hours_spinbox.pack()
+
+        #spinbox for minutes set up
+        tkinter.Label(popup, text="Minutes:").pack()
+        minutes_spinbox = tkinter.Spinbox(popup, from_=0, to=99, width=5,repeatdelay=500, repeatinterval=100, fg="green")
+        minutes_spinbox.config(state="normal", cursor="hand2", bd=3, justify="center", wrap=True)
+        minutes_spinbox.pack()
+
+        #when user hits 'ok' button, call the llcsv function to update based on input
+        ok_button = tkinter.Button(popup, text="OK", command=confirm_completion)
+        ok_button.pack()
+
         # TODO: move task to completed page
         print('task completed')
 
@@ -303,12 +329,14 @@ class LeapList(tkinter.Tk):
             self.add_task_button.config(state = 'normal')
             self.add_task_button.config(cursor = 'hand2')
             # adding remove_task button state - DAB
-            self.remove_task_button.config(state = 'normal')
+            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
+            #self.remove_task_button.config(state = 'normal')
         else:
             self.add_task_button.config(state = 'disabled')
             self.add_task_button.config(cursor = 'arrow')
             # adding remove_task button state - DAB
-            self.remove_task_button.config(state = 'disabled')
+            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
+            #self.remove_task_button.config(state = 'disabled')
 
     def enter_workdate(self):
         if not self.calendar_open:
@@ -358,7 +386,7 @@ class LeapList(tkinter.Tk):
 
         # Creating a check mark widget. When clicked, it will mark task as completed - DAB
         # TODO: figure out how to store task ID and pass into remove task
-        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, command= newTask.remove_task, bg = '#605d60', activebackground = '#605d60')
+        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, command= newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
         newTask.check.pack(side = 'left')
 
         newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
