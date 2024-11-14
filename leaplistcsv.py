@@ -84,5 +84,10 @@ def task_completed(task_ID, hours, minutes):
         print(f"Task ID {task_ID} not found.")
 
 
+def getProgessPerc():
+    df = pd.read_csv(file_path)
+    print(df)
+
+
 def remove_task(task_ID):
     pass
