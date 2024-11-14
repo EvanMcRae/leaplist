@@ -37,10 +37,19 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     #leaving them empty for now
     completion_time = ""
     time_to_complete = ""
+    timeInput = ""
 
     #add the new task to the csv
     df = pd.read_csv(file_path)
+
     new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time]
+
+    if len(df.columns) != len(new_task):
+        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
+
+    print("DataFrame columns:", df.columns)
+    print("New task data:", new_task)
+
     new_row = pd.DataFrame([new_task], columns=df.columns)
     df = pd.concat([df, new_row], ignore_index=True)
     df.to_csv(file_path, index=False)
