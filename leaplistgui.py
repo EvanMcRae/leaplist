@@ -22,7 +22,7 @@ class Task():
         self.check = tkinter.Checkbutton()
         self.label = tkinter.Label()
         self.completed = tkinter.BooleanVar()
-
+        self.progress_bar = ttk.Progressbar()
 
     #complete_task function
     def complete_task(self):
@@ -35,6 +35,7 @@ class Task():
                 llcsv.task_completed(self.task_id, hours, minutes)
                 popup.destroy()
                 self.check.config(state = 'active')
+                self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
 
             #using a popup for now with the spinboxes
             self.check.config(state = 'disabled')
@@ -62,6 +63,8 @@ class Task():
             print('task completed')
         else:
             # TODO: remove task from completed list and move it back to appropriate page
+            print('task uncompleted')
+            self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
             pass
 
     #remove_task function
@@ -206,7 +209,9 @@ class LeapList(tkinter.Tk):
 
         #Progress bar child to footer - DAB
         self.footer.progress = ttk.Progressbar(self, orient = 'horizontal', length = 100, mode = 'determinate')
-
+        self.footer.progress.pack(pady = 10)
+        self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
+        
         # today frame
         self.today = ScrollableFrame(self)
         self.today.pack(fill = 'both', expand = True)
@@ -324,7 +329,6 @@ class LeapList(tkinter.Tk):
     #progress bar function
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
-        self.footer.progress.pack(pady = 10)
 
     def open_calendar(self, x_pos, y_pos, date):
         date_key = date.split('-')
@@ -412,7 +416,7 @@ class LeapList(tkinter.Tk):
 
         newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
         newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
-
+        newTask.progress_bar = self.footer.progress
 
         if self.current_frame == self.today:
             self.today_tasks.append(newTask)
