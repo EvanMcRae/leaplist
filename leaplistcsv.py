@@ -47,8 +47,6 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     if len(df.columns) != len(new_task):
         new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
 
-    print("DataFrame columns:", df.columns)
-    print("New task data:", new_task)
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
     df = pd.concat([df, new_row], ignore_index=True)
@@ -95,7 +93,17 @@ def task_completed(task_ID, hours, minutes):
 
 def getProgessPerc():
     df = pd.read_csv(file_path)
-    print(df)
+    #print(df)
+    totalTask = 0
+    completeTask = 0
+    for index, row in df.iterrows():
+        totalTask += 1
+        if row['Status'] == 'completed':
+            completeTask += 1
+        #print(row['Status'], row['Task ID'])
+
+    progressPerc = (completeTask/totalTask)
+    return progressPerc
 
 
 def remove_task(task_ID):

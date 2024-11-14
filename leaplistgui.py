@@ -206,7 +206,6 @@ class LeapList(tkinter.Tk):
 
         #Progress bar child to footer - DAB
         self.footer.progress = ttk.Progressbar(self, orient = 'horizontal', length = 100, mode = 'determinate')
-        self.footer.progress.pack(pady = 10)
 
         # today frame
         self.today = ScrollableFrame(self)
@@ -323,12 +322,9 @@ class LeapList(tkinter.Tk):
         self.destroy()
 
     #progress bar function
-    def progress_bar(self, numTask, numComp):
-        print('test')
-        if(numComp != 0):
-            totalPerc = (numTask/numComp) * 100
-            print(totalPerc)
-            self.footer.progress['value'] = totalPerc
+    def progress_bar(self):
+        self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
+        self.footer.progress.pack(pady = 10)
 
     def open_calendar(self, x_pos, y_pos, date):
         date_key = date.split('-')
@@ -388,6 +384,8 @@ class LeapList(tkinter.Tk):
 
     #brings up a box to add a task and notes if wanted
     def enter_task(self):
+        #placed in a counter for task added for the progress bar - DAB
+        self.progress_bar()
         
         #testing something out for userinput -DAB
         #retrieve text from user entry
@@ -403,7 +401,6 @@ class LeapList(tkinter.Tk):
         newTask = Task()
         newTask.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
 
-        #placed in a counter for task added for the progress bar - DAB
 
         # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
         newTask.frame = tkinter.Frame(self.current_frame.scrollable_frame, bg = '#605d60')
