@@ -96,13 +96,16 @@ def getProgessPerc():
     #print(df)
     totalTask = 0
     completeTask = 0
+    progressPerc = 0
     for index, row in df.iterrows():
         totalTask += 1
         if row['Status'] == 'completed':
             completeTask += 1
         #print(row['Status'], row['Task ID'])
 
-    progressPerc = (completeTask/totalTask)
+
+    if totalTask != 0:
+        progressPerc = (completeTask/totalTask)
     return progressPerc
 
 
