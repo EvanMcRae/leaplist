@@ -37,6 +37,7 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     #leaving them empty for now
     completion_time = ""
     time_to_complete = ""
+    time_to_complete2 = ""
     timeInput = ""
 
     #add the new task to the csv
@@ -46,8 +47,12 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
 
     #commenting out for now, I think I had a spelling error causing and extra column to be added
     #why can add it back in if the error persists
+
+    print("DataFrame columns:", df.columns)
+    print("New task data:", new_task)
+
     if len(df.columns) != len(new_task):
-        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
+        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, time_to_complete2, timeInput]
 
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
@@ -145,6 +150,16 @@ def edit_task(task_ID, task_name, description, work_date, deadline, priority, ta
         print(f"Task {task_ID} has been updated")
     else:
         print(f"Task ID {task_ID} not found.")
+
+
+def getCompletedTask():
+    df = pd.read_csv(file_path)
+    completedTask = []
+    for index, row in df.iterrows():
+        if row['Status'] == 'completed':
+            completedTask.append(row['Task Name'])
+
+    return completedTask
 
 
 def remove_task(task_ID):
