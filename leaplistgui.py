@@ -413,19 +413,19 @@ class LeapList(tkinter.Tk):
     def open_upcoming(self, event):
         if self.current_frame != self.upcoming:
             self.open_frame(self.upcoming, self.upcoming_button)
-            self.add_task_frame.pack()
+            #self.add_task_frame.pack()
 
     #displays all completed tasks
     def open_completed(self, event):
         if self.current_frame != self.completed:
             self.open_frame(self.completed, self.completed_button)
-            self.add_task_frame.pack_forget()
+            #self.add_task_frame.pack_forget()
 
     #
     def open_productivity(self, event):
         if self.current_frame != self.productivity:
             self.open_frame(self.productivity, self.productivity_button)
-            self.add_task_frame.pack_forget()
+            #self.add_task_frame.pack_forget()
 
     def open_frame(self, frame, button):
         self.current_frame.unbind_events()
