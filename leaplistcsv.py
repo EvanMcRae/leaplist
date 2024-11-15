@@ -109,5 +109,14 @@ def getProgessPerc():
     return progressPerc
 
 
+def getCompletedTask():
+    df = pd.read_csv(file_path)
+    completedTask = []
+    for index, row in df.iterrows():
+        if row['Status'] == 'completed':
+            completedTask.append(row['Task Name'])
+
+    return completedTask
+
 def remove_task(task_ID):
     pass

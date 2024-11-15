@@ -290,6 +290,7 @@ class LeapList(tkinter.Tk):
         # tasks lists
         self.today_tasks = []
         self.upcoming_tasks = []
+        self.completed_task = []
 
     #### SIDEBAR BUTTON COMMANDS ####
     def open_today(self, event):
@@ -344,6 +345,14 @@ class LeapList(tkinter.Tk):
         if len(self.user_entry.get()) > 0:
             self.add_task_button.config(state = 'normal')
             self.add_task_button.config(cursor = 'hand2')
+
+
+    #function for checking completed Task
+    def q_complete(self):
+        self.completed_task = llcsv.getCompletedTask()
+        for i in self.completed_task:
+            print(i)
+ 
 
     #functions for entering data
     def on_type(self, event):
@@ -413,6 +422,7 @@ class LeapList(tkinter.Tk):
         # Creating a check mark widget. When clicked, it will mark task as completed - DAB
         newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, variable = newTask.completed, command = newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
         newTask.check.pack(side = 'left')
+
 
         newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
         newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
