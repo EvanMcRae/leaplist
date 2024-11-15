@@ -400,14 +400,15 @@ class LeapList(tkinter.Tk):
     def open_today(self, event):
         if self.current_frame != self.today:
             self.open_frame(self.today, self.today_button)
-            self.add_task_frame.pack()
+            #self.add_task_frame.pack()
 
     def q_complete(self):
-        self.completed_task = llcsv.getCompletedTask()
-        for i in self.completed_task:
-            print(i)
+        self.completed_task = llcsv.getCompletedTask() #returns a list of strings
+        for task in self.completed_task: 
+            self.cTask = tkinter.Label(self.completed, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
+            #Could be more aesthetically pleasing if the label uses a different frame declared in tasks class 
+            self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
  
-    
 
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
@@ -420,6 +421,7 @@ class LeapList(tkinter.Tk):
         if self.current_frame != self.completed:
             self.open_frame(self.completed, self.completed_button)
             #self.add_task_frame.pack_forget()
+            self.q_complete()
 
     #
     def open_productivity(self, event):
