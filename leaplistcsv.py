@@ -23,7 +23,7 @@ file_path = "LeapList.csv"
     # Completion Time: auto generates the time the task is marked as completed
 if not os.path.exists(file_path):
     cols = ["Task ID", "Task Name", "Description", "Work Date", "Deadline", "Priority",
-               "Status", "Creation Time", "Tags", "Time to Complete", "Completion Time"]
+               "Status", "Creation Time", "Tags", "Time Input", "Completion Time"]
     pd.DataFrame(columns=cols).to_csv(file_path, index=False)
 
 def new_task(task_name, description, work_date, deadline, priority, tags):
@@ -80,7 +80,7 @@ def task_completed(task_ID, hours, minutes):
     if not index.empty:
         df.loc[index, "Status"] = "completed"
         time_to_complete = f"{int(hours):02}:{int(minutes):02}"
-        df.loc[index, 'Time to complete'] = time_to_complete
+        df.loc[index, "Time Input"] = time_to_complete
 
         completion_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         df.loc[index, 'Completion Time'] = completion_time
@@ -90,16 +90,33 @@ def task_completed(task_ID, hours, minutes):
     else:
         print(f"Task ID {task_ID} not found.")
 
+def uncomplete_task(task_ID):
+    #marks task as currently uncomplete and then outputs default values
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    
+    if not index.empty:
+        df.loc[index, "Status"] = "uncompleted"
+        df.loc[index, "Time Input"] = ""
+        df.loc[index, "Completion Time"] = ""
+
+        df.to_csv(file_path, index=False)
+        print(f"Task {task_ID} marked as uncompleted")
+    else:
+        print(f"Task ID {task_ID} not found.")
 
 def getProgessPerc():
+    #displays information about status for all tasks
     df = pd.read_csv(file_path)
     #print(df)
     totalTask = 0
     completeTask = 0
     progressPerc = 0
+    curr_date = datetime.now().strftime("%Y-%m-%d")
     for index, row in df.iterrows():
-        totalTask += 1
-        if row['Status'] == 'completed':
+        if row['Work Date'] == curr_date:
+            totalTask += 1
+        if row['Status'] == 'completed' and row['Work Date'] == curr_date:
             completeTask += 1
         #print(row['Status'], row['Task ID'])
 
@@ -107,6 +124,25 @@ def getProgessPerc():
     if totalTask != 0:
         progressPerc = (completeTask/totalTask)
     return progressPerc
+
+#I think no need to pass status / completion time / time input since those are edited only by checking the box
+#No need to pass creation time since that shouldn't change anyways 
+def edit_task(task_ID, task_name, description, work_date, deadline, priority, tags):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    
+    if not index.empty:
+        df.loc[index, "Task Name"] = 
+        df.loc[index, "Description"] = 
+        df.loc[index, "Work Date"] = 
+        df.loc[index, "Deadline"] = 
+        df.loc[]
+
+        df.to_csv(file_path, index=False)
+        print(f"Task {task_ID} marked as uncompleted")
+    else:
+        print(f"Task ID {task_ID} not found.")
+    pass
 
 
 def remove_task(task_ID):
