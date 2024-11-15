@@ -157,10 +157,8 @@ class Task():
 
         self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
         
-        # TODO: Is this still how we want to do things? To discuss tomorrow
-        #if there's already a task entry box open, don't open another
-        if self.enter_task_frame:
-            return
+        self.add_task_frame.pack_forget()
+
         #I still need to create the GUI for the actual input
         #Then it will save via the llcsv save_task function
     
@@ -405,6 +403,13 @@ class LeapList(tkinter.Tk):
             self.open_frame(self.today, self.today_button)
             self.add_task_frame.pack()
 
+    def q_complete(self):
+        self.completed_task = llcsv.getCompletedTask()
+        for i in self.completed_task:
+            print(i)
+ 
+    
+
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
         if self.current_frame != self.upcoming:
@@ -441,94 +446,10 @@ class LeapList(tkinter.Tk):
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
-    def open_calendar(self, x_pos, y_pos, date):
-        date_key = date.split('-')
-        self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
-        self.calendar.place(x = x_pos, y = y_pos)
-        self.calendar_open = True
-        self.add_task_button.config(state = 'disabled')
-        self.add_task_button.config(cursor = 'arrow')
+    def add_task(self):
+        print('add task')
 
-    def close_calendar(self):
-        self.calendar.destroy()
-        self.calendar_open = False
-        if len(self.user_entry.get()) > 0:
-            self.add_task_button.config(state = 'normal')
-            self.add_task_button.config(cursor = 'hand2')
-
-    #functions for entering data
-    def on_type(self, event):
-        if len(self.user_entry.get()) > 0 and not self.calendar_open:
-            self.add_task_button.config(state = 'normal')
-            self.add_task_button.config(cursor = 'hand2')
-            # adding remove_task button state - DAB
-            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
-            #self.remove_task_button.config(state = 'normal')
-        else:
-            self.add_task_button.config(state = 'disabled')
-            self.add_task_button.config(cursor = 'arrow')
-            # adding remove_task button state - DAB
-            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
-            #self.remove_task_button.config(state = 'disabled')
-
-    def enter_workdate(self):
-        if not self.calendar_open:
-            self.open_calendar(785, 475, self.work_date)
-            self.add_deadline_button.config(state = 'disabled')
-            self.add_deadline_button.config(cursor = 'arrow')
-            self.add_work_date_button.config(text = 'Confirm Work Date')
-        else:
-            self.work_date = self.calendar.get_date()
-            self.close_calendar()
-            self.add_deadline_button.config(state = 'normal')
-            self.add_deadline_button.config(cursor = 'hand2')
-            self.add_work_date_button.config(text = 'Add Work Date')
-
-    def enter_deadlinedate(self):
-        if not self.calendar_open:
-            self.open_calendar(640, 475, self.deadline)
-            self.add_work_date_button.config(state = 'disabled')
-            self.add_work_date_button.config(cursor = 'arrow')
-            self.add_deadline_button.config(text = 'Confirm Deadline')
-        else:
-            self.deadline = self.calendar.get_date()
-            self.close_calendar()
-            self.add_work_date_button.config(state = 'normal')
-            self.add_work_date_button.config(cursor = 'hand2')
-            self.add_deadline_button.config(text = 'Add Deadline')
-
-    #brings up a box to add a task and notes if wanted
-    def enter_task(self):
-        #placed in a counter for task added for the progress bar - DAB
-        self.progress_bar()
-        
-        #testing something out for userinput -DAB
-        #retrieve text from user entry
-        task = self.user_entry.get()
-        #printing for proof of concept
-
-        # TODO: Placeholder!! need ways to pass these in
-        description = "" # optional
-        priority = "" # optional
-        tags = "" # optional
-        
-        #test call to function in csv.py
-        newTask = Task()
-        newTask.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
-
-
-        # TODO: Only add to today or upcoming based on date... what is the UX flow for this?
-        newTask.frame = tkinter.Frame(self.current_frame.scrollable_frame, bg = '#605d60')
-        newTask.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
-
-        # Creating a check mark widget. When clicked, it will mark task as completed - DAB
-        newTask.check = tkinter.Checkbutton(newTask.frame, onvalue = 1, offvalue = 0, variable = newTask.completed, command = newTask.complete_task, bg = '#605d60', activebackground = '#605d60')
-        newTask.check.pack(side = 'left')
-
-        newTask.label = tkinter.Label(newTask.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
-        newTask.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
-        newTask.progress_bar = self.footer.progress
-
+        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress)
         if self.current_frame == self.today:
             self.today_tasks.append(new_task)
         else:

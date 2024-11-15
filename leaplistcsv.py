@@ -44,8 +44,10 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
 
     new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time]
 
-    if len(df.columns) != len(new_task):
-        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
+    #commenting out for now, I think I had a spelling error causing and extra column to be added
+    #why can add it back in if the error persists
+    #if len(df.columns) != len(new_task):
+        #new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
 
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
@@ -120,7 +122,7 @@ def getProgessPerc():
             completeTask += 1
         #print(row['Status'], row['Task ID'])
 
-
+    #returns the tasks completed compared to amount of tasks
     if totalTask != 0:
         progressPerc = (completeTask/totalTask)
     return progressPerc
@@ -132,27 +134,18 @@ def edit_task(task_ID, task_name, description, work_date, deadline, priority, ta
     index = df[df["Task ID"] == task_ID].index
     
     if not index.empty:
-        df.loc[index, "Task Name"] = 
-        df.loc[index, "Description"] = 
-        df.loc[index, "Work Date"] = 
-        df.loc[index, "Deadline"] = 
-        df.loc[]
+        df.loc[index, "Task Name"] = task_name
+        df.loc[index, "Description"] = description
+        df.loc[index, "Work Date"] = work_date
+        df.loc[index, "Deadline"] = deadline
+        df.loc[index, "Priority"] = priority
+        df.loc[index, "Tags"] = tags
 
         df.to_csv(file_path, index=False)
-        print(f"Task {task_ID} marked as uncompleted")
+        print(f"Task {task_ID} has been updated")
     else:
         print(f"Task ID {task_ID} not found.")
-    pass
 
-
-def getCompletedTask():
-    df = pd.read_csv(file_path)
-    completedTask = []
-    for index, row in df.iterrows():
-        if row['Status'] == 'completed':
-            completedTask.append(row['Task Name'])
-
-    return completedTask
 
 def remove_task(task_ID):
     pass
