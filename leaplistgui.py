@@ -146,7 +146,6 @@ class Task():
         #test call to function in csv.py        
         self.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
         
-        
         # Creating a check mark widget. When clicked, it will mark task as completed - DAB
         self.check = tkinter.Checkbutton(self.frame, onvalue = 1, offvalue = 0, variable = self.completed, command = self.complete_task, bg = '#605d60', activebackground = '#605d60')
         self.check.pack(side = 'left')

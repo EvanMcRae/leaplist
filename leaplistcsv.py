@@ -46,8 +46,8 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
 
     #commenting out for now, I think I had a spelling error causing and extra column to be added
     #why can add it back in if the error persists
-    #if len(df.columns) != len(new_task):
-        #new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
+    if len(df.columns) != len(new_task):
+        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, timeInput]
 
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
