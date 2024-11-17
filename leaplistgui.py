@@ -14,7 +14,7 @@ from tkcalendar import Calendar
 #     windll.shcore.SetProcessDpiAwareness(1)
 
 # TODO: add more task functions to this
-class Task():
+class Task(Calendar):
     def __init__(self, parent_frame, progress_bar):
         super().__init__()
 
@@ -129,11 +129,6 @@ class Task():
     #brings up a box to add a task and notes if wanted
     def save_task(self):
         self.editing = False
-        #placed in a counter for task added for the progress bar - DAB
-
-        #testing something out for userinput -DAB
-        
-        #printing for proof of concept
 
         # TODO: Placeholder!! need ways to pass these in
         description = "" # optional
@@ -285,6 +280,9 @@ class ScrollableFrame(ttk.Frame):
 class LeapList(tkinter.Tk):
     def __init__(self):
         super().__init__()
+
+        #Just a test, I don't want to make any drastic changes w/o approval -dab
+
 
         # create window
         self.title('LeapList')
