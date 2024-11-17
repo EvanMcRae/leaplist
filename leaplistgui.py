@@ -15,7 +15,7 @@ from tkcalendar import Calendar
 
 # TODO: add more task functions to this
 class Task(Calendar):
-    def __init__(self, parent_frame, progress_bar):
+    def __init__(self, parent_frame=None, progress_bar=None):
         super().__init__()
 
         # pass parent frame and progress bar from add_task
@@ -218,6 +218,10 @@ class Task(Calendar):
         self.editing = True
         pass
 
+    #This is the test function used to prove we can intermingle classes - DAB
+    def dontBeAStranger(self):
+        print("Hello from the task class!!")
+
 
 class ScrollableFrame(ttk.Frame):
     def __init__(self, container):
@@ -281,9 +285,7 @@ class LeapList(tkinter.Tk):
     def __init__(self):
         super().__init__()
 
-        #Just a test, I don't want to make any drastic changes w/o approval -dab
-
-
+        
         # create window
         self.title('LeapList')
         self.resizable(False, False)
@@ -393,6 +395,8 @@ class LeapList(tkinter.Tk):
         self.upcoming_tasks = []
         self.completed_task = []
 
+        self.task = Task()
+
     #### SIDEBAR BUTTON COMMANDS ####
     #displays the tasks that are due today in a GUI format
     def open_today(self, event):
@@ -459,9 +463,17 @@ class LeapList(tkinter.Tk):
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
+
+    #Just a test, I don't want to make any drastic changes w/o approval -dab
+    def hiTaskClass(self):
+        self.task.dontBeAStranger()
+    
+
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
+        self.hiTaskClass()
+
 
 # create the application
 if __name__ == '__main__':
