@@ -18,56 +18,59 @@ class Task(Calendar):
     def __init__(self, parent_frame=None, progress_bar=None):
         super().__init__()
 
+        # to clean up gui bugs :) 
+        if(parent_frame != None):
         # pass parent frame and progress bar from add_task
-        self.frame = ttk.Frame(parent_frame) # , bg = '#605d60'
-        self.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
-        self.progress_bar = progress_bar
+            self.frame = ttk.Frame(parent_frame) # , bg = '#605d60'
+            self.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
+            self.progress_bar = progress_bar
 
-        self.task_id = 0
-        self.check = tkinter.Checkbutton()
-        self.label = tkinter.Label()
-        self.completed = tkinter.BooleanVar()
+            self.task_id = 0
+            self.check = tkinter.Checkbutton()
+            self.label = tkinter.Label()
+            self.completed = tkinter.BooleanVar()
         
-        self.editing = True
+            self.editing = True
 
         # add task frame
-        self.add_task_frame = tkinter.Frame(self.frame, bg = '#363237')
-        self.add_task_frame.pack(expand = True, fill = 'both')
+        
+            self.add_task_frame = tkinter.Frame(self.frame, bg = '#363237')
+            self.add_task_frame.pack(expand = True, fill = 'both')
 
         # user input
-        self.user_entry = tkinter.Entry(self.add_task_frame)
-        self.user_entry.config(font = ('Arial', 15))
+            self.user_entry = tkinter.Entry(self.add_task_frame)
+            self.user_entry.config(font = ('Arial', 15))
 
         # hexadecimal for font color
-        self.user_entry.config(bg = '#fff')
-        self.user_entry.config(fg = '#000')
+            self.user_entry.config(bg = '#fff')
+            self.user_entry.config(fg = '#000')
 
         #We can always disable the text box when we don't want users to type anything.
         #self.user_entry.config(state= 'disabled')
 
         #does not limit amount of characters passed; limits amount of characters displayed
-        self.user_entry.config(width=25)
-        self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
-        self.user_entry.focus_set()
-        self.user_entry.bind("<KeyRelease>", self.on_type)
+            self.user_entry.config(width=25)
+            self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
+            self.user_entry.focus_set()
+            self.user_entry.bind("<KeyRelease>", self.on_type)
 
         # calendar + default work date and deadline
         # TODO do we want these to be the default?
-        self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
-        self.calendar_open = False
-        self.work_date = self.calendar.get_date()
-        self.deadline = self.calendar.get_date()
+            self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
+            self.calendar_open = False
+            self.work_date = self.calendar.get_date()
+            self.deadline = self.calendar.get_date()
 
         # add deadline button
-        self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+            self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+            self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
 
         # add work date
-        self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
+            self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+            self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
-        self.save_button = tkinter.Button(self.add_task_frame, text = 'Save', command = self.save_task)
-        self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
+            self.save_button = tkinter.Button(self.add_task_frame, text = 'Save', command = self.save_task)
+            self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
 
     #displays the calendar in the position described along with the buttons for the GUI
     def open_calendar(self, x_pos, y_pos, date):
@@ -221,6 +224,9 @@ class Task(Calendar):
     #This is the test function used to prove we can intermingle classes - DAB
     def dontBeAStranger(self):
         print("Hello from the task class!!")
+
+    def addTF(self):
+        self.add_task_frame.pack()
 
 
 class ScrollableFrame(ttk.Frame):
@@ -402,7 +408,7 @@ class LeapList(tkinter.Tk):
     def open_today(self, event):
         if self.current_frame != self.today:
             self.open_frame(self.today, self.today_button)
-            #self.add_task_frame.pack()
+            #self.task.addTF()
 
     def q_complete(self):
         self.completed_task = llcsv.getCompletedTask() #returns a list of strings
