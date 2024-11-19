@@ -23,7 +23,7 @@ file_path = "LeapList.csv"
     # Completion Time: auto generates the time the task is marked as completed
 if not os.path.exists(file_path):
     cols = ["Task ID", "Task Name", "Description", "Work Date", "Deadline", "Priority",
-               "Status", "Creation Time", "Tags", "Time Input", "Completion Time"]
+               "Status", "Creation Time", "Tags", "Completion Time"]
     pd.DataFrame(columns=cols).to_csv(file_path, index=False)
 
 def new_task(task_name, description, work_date, deadline, priority, tags):
@@ -36,24 +36,17 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     #this only happens if the task is marked as completed
     #leaving them empty for now
     completion_time = ""
-    time_to_complete = ""
-    time_to_complete2 = ""
-    timeInput = ""
 
     #add the new task to the csv
     df = pd.read_csv(file_path)
 
-    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time]
+    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, completion_time]
 
     #commenting out for now, I think I had a spelling error causing and extra column to be added
     #why can add it back in if the error persists
 
     print("DataFrame columns:", df.columns)
     print("New task data:", new_task)
-
-    if len(df.columns) != len(new_task):
-        new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, time_to_complete2, timeInput]
-
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
     df = pd.concat([df, new_row], ignore_index=True)
