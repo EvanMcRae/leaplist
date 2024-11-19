@@ -20,7 +20,7 @@ class Task(Calendar):
 
         # to clean up gui bugs :) 
         if(parent_frame != None):
-        # pass parent frame and progress bar from add_task
+            # pass parent frame and progress bar from add_task
             self.frame = ttk.Frame(parent_frame) # , bg = '#605d60'
             self.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
             self.progress_bar = progress_bar
@@ -29,48 +29,58 @@ class Task(Calendar):
             self.check = tkinter.Checkbutton()
             self.label = tkinter.Label()
             self.completed = tkinter.BooleanVar()
-        
+
             self.editing = True
 
-        # add task frame
-        
-            self.add_task_frame = tkinter.Frame(self.frame, bg = '#363237')
+            # add task frame
+            self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             self.add_task_frame.pack(expand = True, fill = 'both')
 
-        # user input
+            # user input
             self.user_entry = tkinter.Entry(self.add_task_frame)
             self.user_entry.config(font = ('Arial', 15))
 
-        # hexadecimal for font color
+            # hexadecimal for font color
             self.user_entry.config(bg = '#fff')
             self.user_entry.config(fg = '#000')
 
-        #We can always disable the text box when we don't want users to type anything.
-        #self.user_entry.config(state= 'disabled')
+            #We can always disable the text box when we don't want users to type anything.
+            #self.user_entry.config(state= 'disabled')
 
-        #does not limit amount of characters passed; limits amount of characters displayed
+            #does not limit amount of characters passed; limits amount of characters displayed
             self.user_entry.config(width=25)
             self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
             self.user_entry.focus_set()
             self.user_entry.bind("<KeyRelease>", self.on_type)
 
-        # calendar + default work date and deadline
-        # TODO do we want these to be the default?
+            # calendar + default work date and deadline
+            # TODO do we want these to be the default?
+            # TODO: dynamic placement for calendar
             self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
             self.calendar_open = False
             self.work_date = self.calendar.get_date()
             self.deadline = self.calendar.get_date()
 
-        # add deadline button
+            # add deadline button
             self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
             self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
 
-        # add work date
+            # add work date
             self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
             self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
             self.save_button = tkinter.Button(self.add_task_frame, text = 'Save', command = self.save_task)
             self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
+
+            self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
+            
+            # Creating a check mark widget. When clicked, it will mark task as completed - DAB
+            self.check = tkinter.Checkbutton(self.view_task_frame, onvalue = 1, offvalue = 0, variable = self.completed, command = self.complete_task, bg = '#605d60', activebackground = '#605d60')
+            self.check.pack(side = 'left')
+
+            self.label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
+            self.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
+            self.label.bind('<Double-Button-1>', self.edit_task)
 
     #displays the calendar in the position described along with the buttons for the GUI
     def open_calendar(self, x_pos, y_pos, date):
@@ -141,23 +151,18 @@ class Task(Calendar):
         #retrieve text from user entry
         task = self.user_entry.get()
         
-        #test call to function in csv.py        
-        self.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
         
-        # Creating a check mark widget. When clicked, it will mark task as completed - DAB
-        self.check = tkinter.Checkbutton(self.frame, onvalue = 1, offvalue = 0, variable = self.completed, command = self.complete_task, bg = '#605d60', activebackground = '#605d60')
-        self.check.pack(side = 'left')
 
-        self.label = tkinter.Label(self.frame, text = task, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
-        self.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
-        self.label.bind('<Double-Button-1>', self.edit_task)
+        #test call to function in csv.py     
+        if (self.task_id == 0):   
+            self.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
+            self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
+            self.label.config(text = task)
+        else:
+            llcsv.edit_task(self.task_id, task, description, self.work_date, self.deadline, priority, tags)
 
-        self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
-        
         self.add_task_frame.pack_forget()
-
-        #I still need to create the GUI for the actual input
-        #Then it will save via the llcsv save_task function
+        self.view_task_frame.pack(fill = 'both', expand = True)
     
     #complete_task function
     def complete_task(self):
@@ -211,14 +216,14 @@ class Task(Calendar):
         param : task  
     '''
     def remove_task(self):
-        
-        #may call task complete function from leaplistcsv.py
         llcsv.remove_task(self.task_id)
         print('task removed')
+        # TODO: delete it from owning list in leaplist app
 
     def edit_task(self, event):
-        print('editing task')
         self.editing = True
+        self.view_task_frame.pack_forget()
+        self.add_task_frame.pack(fill = 'both', expand = True)
         pass
 
     #This is the test function used to prove we can intermingle classes - DAB
@@ -386,7 +391,7 @@ class LeapList(tkinter.Tk):
 
         # add task button
         self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.add_task_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
+        self.add_task_button.grid(column = 0, row = 0, padx = 10, pady = 10)
 
         # # completed task -- TODO repurpose
         #     # you need a frame

@@ -23,8 +23,12 @@ file_path = "LeapList.csv"
     # Completion Time: auto generates the time the task is marked as completed
 if not os.path.exists(file_path):
     cols = ["Task ID", "Task Name", "Description", "Work Date", "Deadline", "Priority",
-               "Status", "Creation Time", "Tags", "Completion Time"]
-    pd.DataFrame(columns=cols).to_csv(file_path, index=False)
+               "Status", "Creation Time", "Tags", "Time Input", "Completion Time"]
+    df = pd.DataFrame(columns=cols)
+    df["Description"] = df["Description"].astype("string")
+    df["Priority"] = df["Priority"].astype("string")
+    df["Tags"] = df["Tags"].astype("string")
+    df.to_csv(file_path, index=False)
 
 def new_task(task_name, description, work_date, deadline, priority, tags):
 
@@ -36,11 +40,12 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     #this only happens if the task is marked as completed
     #leaving them empty for now
     completion_time = ""
+    time_to_complete = ""
 
     #add the new task to the csv
     df = pd.read_csv(file_path)
 
-    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, completion_time]
+    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time]
 
     #commenting out for now, I think I had a spelling error causing and extra column to be added
     #why can add it back in if the error persists
@@ -49,6 +54,7 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     print("New task data:", new_task)
 
     new_row = pd.DataFrame([new_task], columns=df.columns)
+
     df = pd.concat([df, new_row], ignore_index=True)
     df.to_csv(file_path, index=False)
 
@@ -133,11 +139,11 @@ def edit_task(task_ID, task_name, description, work_date, deadline, priority, ta
     
     if not index.empty:
         df.loc[index, "Task Name"] = task_name
-        df.loc[index, "Description"] = description
+        df.loc[index, "Description"] = description if description else None
         df.loc[index, "Work Date"] = work_date
         df.loc[index, "Deadline"] = deadline
-        df.loc[index, "Priority"] = priority
-        df.loc[index, "Tags"] = tags
+        df.loc[index, "Priority"] = priority if priority else None
+        df.loc[index, "Tags"] = tags if tags else None
 
         df.to_csv(file_path, index=False)
         print(f"Task {task_ID} has been updated")
