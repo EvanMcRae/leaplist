@@ -34,6 +34,7 @@ class Task(Calendar):
 
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
+
             self.add_task_frame.pack(expand = True, fill = 'both')
 
             # user input
@@ -62,14 +63,14 @@ class Task(Calendar):
             self.deadline = self.calendar.get_date()
 
             # add deadline button
-            self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+            self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
             self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
 
             # add work date
-            self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+            self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
             self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
-            self.save_button = tkinter.Button(self.add_task_frame, text = 'Save', command = self.save_task)
+            self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'disabled')
             self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
 
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
@@ -79,7 +80,8 @@ class Task(Calendar):
             self.check.pack(side = 'left')
 
             self.label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
-            self.label.pack(fill = 'both', expand = True, side = 'right', anchor = 'w', ipadx = 15)
+            self.label.pack(fill = 'both', side = 'left', anchor = 'w', ipadx = 15)
+            self.view_task_frame.bind('<Double-Button-1>', self.edit_task)
             self.label.bind('<Double-Button-1>', self.edit_task)
 
     #displays the calendar in the position described along with the buttons for the GUI
@@ -151,16 +153,14 @@ class Task(Calendar):
         #retrieve text from user entry
         task = self.user_entry.get()
         
-        
-
         #test call to function in csv.py     
         if (self.task_id == 0):   
             self.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
             self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
-            self.label.config(text = task)
         else:
             llcsv.edit_task(self.task_id, task, description, self.work_date, self.deadline, priority, tags)
 
+        self.label.config(text = task)
         self.add_task_frame.pack_forget()
         self.view_task_frame.pack(fill = 'both', expand = True)
     
@@ -250,19 +250,23 @@ class ScrollableFrame(ttk.Frame):
 
         # create scrollable frame inside canvas to hold widgets
         self.scrollable_frame = ttk.Frame(self.canvas, style = 'LeapList.TFrame')
-        self.canvas.create_window((0, 0), window = self.scrollable_frame, anchor = 'nw')
+        self.canvas_frame = self.canvas.create_window((0, 0), window = self.scrollable_frame, anchor = 'nw')
 
         # set scrollable frame background
         style = ttk.Style()
         style.configure("LeapList.TFrame", background = '#8e9294')
+        self.canvas.bind('<Configure>', self._resize_scrollable_frame)
+        self.canvas.event_generate("<Configure>")
     
     def bind_events(self):
         self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
         self.scrollable_frame.bind('<Configure>', self._update_scrollregion)
-    
+        self.canvas.bind('<Configure>', self._resize_scrollable_frame)
+
     def unbind_events(self):
         self.canvas.unbind('<MouseWheel>')
         self.scrollable_frame.unbind('<Configure>')
+        self.canvas.unbind('<Configure>')
 
     # handle mouse wheel scrolling
     def _on_mousewheel(self, event):
@@ -281,6 +285,11 @@ class ScrollableFrame(ttk.Frame):
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
         self.toggle_scrollbar()
 
+    # resize the scrollable frame to match the canvas width
+    def _resize_scrollable_frame(self, event):
+        canvas_width = event.width
+        self.canvas.itemconfig(self.canvas_frame, width = canvas_width)
+        
     # toggle visibility of scrollbar based on content height
     def toggle_scrollbar(self):
         # get height of canvas and content in frame
@@ -295,7 +304,6 @@ class ScrollableFrame(ttk.Frame):
 class LeapList(tkinter.Tk):
     def __init__(self):
         super().__init__()
-
         
         # create window
         self.title('LeapList')
@@ -304,11 +312,11 @@ class LeapList(tkinter.Tk):
         self.config(bg = '#fff')
         self.enter_task_frame = None
         
-        
         self.style = ttk.Style()
         # self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
         self.style.configure('Selected.TLabel', foreground = '#fff', background = '#605d60')
         self.style.configure('AddButton.TButton', padding = (5, 5, 5, 5), background = '#363237')
+        self.style.configure('TaskButton.TButton', padding = (5, 5, 5, 5), background = '#605d60')
 
         #### TOPBAR ####
 
