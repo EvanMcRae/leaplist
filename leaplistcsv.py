@@ -160,6 +160,23 @@ def getCompletedTask():
 
     return completedTask
 
-
+#Use this function to delete a task from the csv
+#This does not send a task to the completed logbook, removed tasks can't be recovered
 def remove_task(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+
+    if not index.empty:
+        df = df.drop(index)
+        df.to_csv(file_path, index = False)
+        print("task removed")
+
+    else: 
+        print("Task with id was not found")
+
+def create_upcoming_list():
+    pass
+def create_today_list():
+    pass
+def create_completed_list():
     pass
