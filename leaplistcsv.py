@@ -41,11 +41,13 @@ def new_task(task_name, description, work_date, deadline, priority, tags):
     #leaving them empty for now
     completion_time = ""
     time_to_complete = ""
+    complete_to_time = ""
+    time_input = ""
 
     #add the new task to the csv
     df = pd.read_csv(file_path)
 
-    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time]
+    new_task = [task_ID, task_name, description, work_date, deadline, priority, status, creation_time, tags, time_to_complete, completion_time, complete_to_time, time_input]
 
     #commenting out for now, I think I had a spelling error causing and extra column to be added
     #why can add it back in if the error persists
