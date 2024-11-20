@@ -14,7 +14,7 @@ from tkcalendar import Calendar
 #     windll.shcore.SetProcessDpiAwareness(1)
 
 # TODO: add more task functions to this
-class Task(Calendar):
+class Task():
     def __init__(self, parent_frame=None, progress_bar=None):
         super().__init__()
 
@@ -55,12 +55,12 @@ class Task(Calendar):
             self.user_entry.bind("<KeyRelease>", self.on_type)
 
             # calendar + default work date and deadline
-            # TODO do we want these to be the default?
-            # TODO: dynamic placement for calendar
             self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
             self.calendar_open = False
+            # TODO do we want these to be the default?
             self.work_date = self.calendar.get_date()
             self.deadline = self.calendar.get_date()
+            self.calendar_popup = None
 
             # add deadline button
             self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
@@ -70,8 +70,11 @@ class Task(Calendar):
             self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
             self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
 
-            self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'disabled')
+            self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
             self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
+
+            self.remove_button = ttk.Button(self.add_task_frame, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
+            self.remove_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
 
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             
@@ -85,39 +88,40 @@ class Task(Calendar):
             self.label.bind('<Double-Button-1>', self.edit_task)
 
     #displays the calendar in the position described along with the buttons for the GUI
-    def open_calendar(self, x_pos, y_pos, date):
+    def open_calendar(self, date, func):
+        self.calendar_popup = tkinter.Toplevel()
         date_key = date.split('-')
-        self.calendar = Calendar(self, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
-        self.calendar.place(x = x_pos, y = y_pos)
+        self.calendar = Calendar(self.calendar_popup, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
+        self.calendar.pack()
         self.calendar_open = True
         self.save_button.config(state = 'disabled')
         self.save_button.config(cursor = 'arrow')
+        self.remove_button.config(state = 'disabled')
+        self.remove_button.config(cursor = 'arrow')
+        ok_button = tkinter.Button(self.calendar_popup, text="OK", command=func)
+        ok_button.pack()
 
     def close_calendar(self):
-        self.calendar.destroy()
+        self.calendar_popup.destroy()
         self.calendar_open = False
+        self.remove_button.config(state = 'normal')
+        self.remove_button.config(cursor = 'hand2')
         if len(self.user_entry.get()) > 0:
             self.save_button.config(state = 'normal')
             self.save_button.config(cursor = 'hand2')
-
+    
     #functions for entering data
     def on_type(self, event):
         if len(self.user_entry.get()) > 0 and not self.calendar_open:
             self.save_button.config(state = 'normal')
             self.save_button.config(cursor = 'hand2')
-            # adding remove_task button state - DAB
-            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
-            #self.remove_task_button.config(state = 'normal')
         else:
             self.save_button.config(state = 'disabled')
             self.save_button.config(cursor = 'arrow')
-            # adding remove_task button state - DAB
-            # I commented these our for now to remove errors, let's discuss tomorrow - Olivia
-            #self.remove_task_button.config(state = 'disabled')
 
     def enter_workdate(self):
         if not self.calendar_open:
-            self.open_calendar(785, 475, self.work_date)
+            self.open_calendar(self.work_date, self.enter_workdate)
             self.add_deadline_button.config(state = 'disabled')
             self.add_deadline_button.config(cursor = 'arrow')
             self.add_work_date_button.config(text = 'Confirm Work Date')
@@ -130,7 +134,7 @@ class Task(Calendar):
 
     def enter_deadlinedate(self):
         if not self.calendar_open:
-            self.open_calendar(640, 475, self.deadline)
+            self.open_calendar(self.deadline, self.enter_deadlinedate)
             self.add_work_date_button.config(state = 'disabled')
             self.add_work_date_button.config(cursor = 'arrow')
             self.add_deadline_button.config(text = 'Confirm Deadline')
@@ -202,7 +206,7 @@ class Task(Calendar):
             # TODO: move task to completed page
             print('task completed')
         else:
-            # TODO: remove task from completed list and move it back to appropriate page
+            # TODO: pack_forget task from completed page and move it back to appropriate page
             llcsv.uncomplete_task(self.task_id)
             print('task uncompleted')
             self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
@@ -216,9 +220,11 @@ class Task(Calendar):
         param : task  
     '''
     def remove_task(self):
-        llcsv.remove_task(self.task_id)
-        print('task removed')
-        # TODO: delete it from owning list in leaplist app
+        if self.task_id != 0:
+            llcsv.remove_task(self.task_id)
+            print('task removed')
+            # TODO: delete it from owning list in leaplist app
+        self.frame.pack_forget()
 
     def edit_task(self, event):
         self.editing = True
@@ -444,12 +450,13 @@ class LeapList(tkinter.Tk):
             #self.add_task_frame.pack_forget()
             self.q_complete()
 
-    #
+    #opens productivity frame
     def open_productivity(self, event):
         if self.current_frame != self.productivity:
             self.open_frame(self.productivity, self.productivity_button)
             #self.add_task_frame.pack_forget()
 
+    #general function for opening any frame
     def open_frame(self, frame, button):
         self.current_frame.unbind_events()
         self.current_frame.pack_forget()
@@ -468,10 +475,10 @@ class LeapList(tkinter.Tk):
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
+    #adds task
     def add_task(self):
-        print('add task')
-
         new_task = Task(self.current_frame.scrollable_frame, self.footer.progress)
+        # TODO: Don't add task to current frame, add it to whatever it belongs in!
         if self.current_frame == self.today:
             self.today_tasks.append(new_task)
         else:
@@ -482,17 +489,14 @@ class LeapList(tkinter.Tk):
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
-
     #Just a test, I don't want to make any drastic changes w/o approval -dab
     def hiTaskClass(self):
         self.task.dontBeAStranger()
     
-
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
         self.hiTaskClass()
-
 
 # create the application
 if __name__ == '__main__':
