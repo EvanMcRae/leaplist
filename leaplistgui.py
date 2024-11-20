@@ -1,14 +1,9 @@
-import os
-import sys
-
-if sys.platform == "darwin":
-    import tkmacosx as tkinter
-else:
-    import tkinter
-
+import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 from PIL import ImageTk, Image
+import os
+import sys
 import leaplistcsv as llcsv
 import datetime
 from tkcalendar import Calendar
@@ -60,10 +55,10 @@ class Task(Calendar):
             self.user_entry.bind("<KeyRelease>", self.on_type)
 
             # calendar + default work date and deadline
-            # TODO popup widget for calendar
+            # TODO do we want these to be the default?
+            # TODO: dynamic placement for calendar
             self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
             self.calendar_open = False
-            # TODO do we want these to be the default?
             self.work_date = self.calendar.get_date()
             self.deadline = self.calendar.get_date()
 
