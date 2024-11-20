@@ -437,11 +437,18 @@ class LeapList(tkinter.Tk):
             self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
  
 
+    def q_upcoming(self):
+        self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
+        for task in self.upcoming_tasks:
+            self.uTask = tkinter.Label(self.upcoming, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
+            self.uTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
+
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
         if self.current_frame != self.upcoming:
             self.open_frame(self.upcoming, self.upcoming_button)
             #self.add_task_frame.pack()
+            self.q_upcoming()
 
     #displays all completed tasks
     def open_completed(self, event):

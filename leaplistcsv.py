@@ -176,6 +176,16 @@ def remove_task(task_ID):
     else: 
         print("Task with id was not found")
 
+def getUpcomingTask():
+    curr_date = datetime.now().strftime("%Y-%m-%d")
+    df = pd.read_csv(file_path)
+    upcomingTask = []
+    for index, row in df.iterrows():
+        if row['Deadline'] != curr_date:
+            upcomingTask.append(row['Task Name'])
+            
+    return upcomingTask
+
 def create_upcoming_list():
     pass
 def create_today_list():
