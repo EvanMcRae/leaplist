@@ -478,6 +478,11 @@ class LeapList(tkinter.Tk):
                 self.q_upcoming()
                 self.upcoming.opened = True
 
+    #displays the tasks due today
+    def open_Dailys(self, event):
+        if self.current_frame == self.today:
+            self.open_frame(self.today, self.today_button)
+
     #displays all completed tasks
     def open_completed(self, event):
         if self.current_frame != self.completed:
