@@ -3,31 +3,27 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime
 
-# Load CSV file
+# Load CSV file into variable data
 data = pd.read_csv("Leaplist.csv")
-
-# Load which view: 1 = daily, 2 = monthly, 3 = tag
-# ??????????????
-view = 1
 
 #Determine if Daily, Monthly, Tag Specific View is wanted
 # For Daily Task ---------------------------------------------------------------------------------------------------
-if int(view) == 1:
-
-	task = 0
+def daily_view():
 	# Determine if task is on current day for daily tasks
-	for e in data:
-		if e.iloc[7][0:10] == current_date.strftime("%Y-%m-%d"):
+    for index, row in df.iterrows():
+		totalTask = 0
+		if row['Work Date'] == datetime.now().strftime("%Y-%m-%d"):
 			# Calculate how much of the task is completed
-			percentage = e[10] / e[9]
+			percentage = row["Time Input"] / row["Completion Time"]
+
 			# Plot Data in Bar Graph form
-			plt.bar(task, percentage, color='limegreen')
+			plt.bar(totalTask, percentage, color='limegreen')
 		 	# Label the Bar
-		    plt.text(task, percentage + 0.05, e[1], ha='center', va='bottom')
+		    plt.text(totalTask, percentage + 0.05, row["Task Name"], ha='center', va='bottom')
 	
-			task += 1
-		
+			totalTask += 1
 		
 	# Label Plot
 	plt.title("Daily Tasks")
@@ -35,26 +31,29 @@ if int(view) == 1:
 	plt.ylabel("Percentage Completed")
 	
 	# Show the plot
-	plt.show()
-	
-	task = 0
+	plt.savefig("output/daily_view.png")
+	return plt
 
 	
 # For Monthly Tasks -------------------------------------------------------------------------------------------
-if int(view) == 2:
-	task = 0
-	done = 0
-	# Determine if task is on current data for monthly tasks
-	# variable used to keep track of tasks done in each day
-	curr = current_date.strftime("%Y-%m-%d")
-	for e in data:
-		if e[7][0:8] == current_date.strftime("%Y-%m"):
-			if e['Status'] == 'completed':
-				done += 1
-			task += 1
+def monthly_view(month):
+	totalTask = 0
+	completed_task = 0
+	for index, row in df.iterrows():
+		
+		if row['Work Date'] == datetime.now().strftime("%Y-%m-%d"):
+			# Calculate how much of the task is completed
+			percentage = row["Time Input"] / row["Completion Time"]
+
+			# Plot Data in Bar Graph form
+			plt.bar(totalTask, percentage, color='limegreen')
+		 	# Label the Bar
+		    plt.text(totalTask, percentage + 0.05, row["Task Name"], ha='center', va='bottom')
+	
+			totalTask += 1
 
 	# create a split of completed tasks in the month
-	y = [done, task-done]
+	y = [completed_task, totalTask]
 	mylabels = ["Completed", "Uncompleted"]
 
 	plt.pie(y, labels = mylabels)		
@@ -63,15 +62,13 @@ if int(view) == 2:
 
 
 # For Specific Tag Tasks -------------------------------------------------------------------------------------------
-if view == 3:
+def tag_task(tag_id):
 	task = 0
 	completed = 0
-	# Determine which tag to create a graph for	
-	tag_choice = "Homework"
 
 	for e in data:
 		# Determine if task is on current data for monthly tasks
-		if e[8] in tag_choice:
+		if e[8] in tag_id:
 			task += 1
 		 	if e['Status'] == 'completed':
 		  		completed += 1
@@ -84,8 +81,33 @@ if view == 3:
 
 	# Label Plot
 	plt.title("Tag Specific Tasks")
-	plt.xlabel(tag_choice)
+	plt.xlabel(tag_id)
 	plt.ylabel("Amount of Specific Tag Tasks Completed")
 	
 	# Show the plot
 	plt.show()
+
+
+def create_productivity(daily, start_date, end_date, month, tags, time_input):
+	if not time_input:
+		if not daily:
+			daily_view()
+
+		if not tags:
+			tag_task(tags)
+
+		if not (start_date or end_date):
+			specific_date(start_date, end_date)
+		
+		if not month:
+			monthly_view(month)
+
+	elif:
+		if not tags:
+			tag_task_time(tags)
+
+		if not (start_date or end_date):
+			date_time(start_date, end_date)
+
+
+			
