@@ -87,27 +87,34 @@ def tag_task(tag_id):
 	# Show the plot
 	plt.show()
 
-
+#main function that filters through inputs to determine what type of graph is wanted and calls the function to generate it
 def create_productivity(daily, start_date, end_date, month, tags, time_input):
 	if not time_input:
+		#creates a plot of all tasks for the day and how completed they are
 		if not daily:
-			daily_view()
+			return daily_view()
 
+		#creates a plot filled with only one tag and shows how completed they are
 		if not tags:
-			tag_task(tags)
+			return tag_task(tags)
 
+		#plots amount of tasks from a starting date till the end date
 		if not (start_date or end_date):
-			specific_date(start_date, end_date)
-		
+			return specific_date(start_date, end_date)
+
+		#plots the amount of tasks in a month; pi chart of completed vs not completed
+		#maybe pi chart of the different tasks for the month
 		if not month:
-			monthly_view(month)
+			return monthly_view(month)
 
 	elif:
+		#plots tags and the amount of time spent on each tag
 		if not tags:
-			tag_task_time(tags)
+			return tag_task_time(tags)
 
+		#plots days from start to end date and shows how many hours were spent working on tasks each day
 		if not (start_date or end_date):
-			date_time(start_date, end_date)
+			return date_time(start_date, end_date)
 
 
 			
