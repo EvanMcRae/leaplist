@@ -214,7 +214,7 @@ def getUpcomingTask():
     df = pd.read_csv(file_path)
     upcomingTask = []
     for index, row in df.iterrows():
-        if row['Deadline'] != curr_date:
+        if row['Deadline'] != curr_date and not is_completed(row['Task ID']):
             upcomingTask.append(row['Task ID'])
             
     return upcomingTask
@@ -224,7 +224,7 @@ def getTodayTask():
     df = pd.read_csv(file_path)
     tasksForToday = []
     for i, rows in df.iterrows():
-        if rows['Deadline'] == today:
+        if rows['Deadline'] == today and not is_completed(rows['Task ID']):
             tasksForToday.append(rows['Task ID'])
     return tasksForToday
 

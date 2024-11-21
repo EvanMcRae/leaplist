@@ -440,7 +440,8 @@ class LeapList(tkinter.Tk):
         # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
 
         self.q_today()
-        self.today.opened = True
+        self.q_upcoming()
+        self.q_complete()
 
         self.task = Task()
 
@@ -465,33 +466,21 @@ class LeapList(tkinter.Tk):
     def open_today(self, event):
         if self.current_frame != self.today:
             self.open_frame(self.today, self.today_button)
-            if not self.today.opened:
-                self.q_today()
-                self.today.opened = True      
 
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
         if self.current_frame != self.upcoming:
             self.open_frame(self.upcoming, self.upcoming_button)
-            #self.add_task_frame.pack()
-            if not self.upcoming.opened:
-                self.q_upcoming()
-                self.upcoming.opened = True
 
     #displays all completed tasks
     def open_completed(self, event):
         if self.current_frame != self.completed:
             self.open_frame(self.completed, self.completed_button)
-            #self.add_task_frame.pack_forget()
-            if not self.completed.opened:
-                self.q_complete()
-                self.completed.opened = True
 
     #opens productivity frame
     def open_productivity(self, event):
         if self.current_frame != self.productivity:
             self.open_frame(self.productivity, self.productivity_button)
-            #self.add_task_frame.pack_forget()
 
     #general function for opening any frame
     def open_frame(self, frame, button):
