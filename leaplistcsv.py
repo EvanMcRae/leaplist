@@ -184,6 +184,16 @@ def getUpcomingTask():
             
     return upcomingTask
 
+def getTodayTask():
+    today = datetime.now().strftime("%Y-%m-%d")
+    df = pd.read.csv(file_path)
+    tasksForToday = []
+    for i, rows in df.iterrows():
+        if rows['Deadline'] == today:
+            tasksForToday.append(rows['Task Name'])
+
+    return tasksForToday
+
 def create_upcoming_list():
     pass
 def create_today_list():

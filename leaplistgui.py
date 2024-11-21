@@ -443,6 +443,9 @@ class LeapList(tkinter.Tk):
             self.uTask = tkinter.Label(self.upcoming, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
             self.uTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
 
+    def upcoming_tasks(self):
+      self.upcoming_tasks = llcsv.getUpcomingTask()
+
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
         if self.current_frame != self.upcoming:
