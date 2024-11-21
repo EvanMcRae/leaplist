@@ -225,8 +225,7 @@ def getTodayTask():
     tasksForToday = []
     for i, rows in df.iterrows():
         if rows['Deadline'] == today:
-            tasksForToday.append(rows['Task Name'])
-
+            tasksForToday.append(rows['Task ID'])
     return tasksForToday
 
 #this function returns a list of comppleted tasks for the completed logbook

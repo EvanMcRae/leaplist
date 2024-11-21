@@ -25,7 +25,7 @@ class Task():
             self.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
             self.progress_bar = progress_bar
 
-            self.task_id = task_id
+            self.task_id = 0
             self.check = tkinter.Checkbutton()
             self.label = tkinter.Label()
             self.completed = tkinter.BooleanVar()
@@ -89,7 +89,8 @@ class Task():
             self.view_task_frame.bind('<Double-Button-1>', self.edit_task)
             self.label.bind('<Double-Button-1>', self.edit_task)
 
-            if self.task_id != None:
+            if task_id != None:
+                self.task_id = task_id
                 task_name = llcsv.get_task_name(task_id)
                 self.label.config(text = task_name)
                 self.user_entry.insert(0, task_name)
@@ -438,12 +439,26 @@ class LeapList(tkinter.Tk):
         # self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
         # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
 
-        # tasks lists
-        self.today_tasks = []
-        self.upcoming_tasks = []
-        self.completed_task = []
+        self.q_today()
+        self.today.opened = True
 
         self.task = Task()
+
+    #### QUEUE TASKS ####
+    def q_today(self):
+        self.today_task = llcsv.getTodayTask()
+        for task_id in self.today_task:
+            tTask = Task(self.today.scrollable_frame, self.footer.progress, task_id)
+
+    def q_complete(self):
+        self.completed_task = llcsv.getCompletedTask() #returns a list of strings
+        for task_id in self.completed_task: 
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id)
+
+    def q_upcoming(self):
+        self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
+        for task_id in self.upcoming_tasks:
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id)
 
     #### SIDEBAR BUTTON COMMANDS ####
     #displays the tasks that are due today in a GUI format
@@ -453,25 +468,6 @@ class LeapList(tkinter.Tk):
             if not self.today.opened:
                 self.q_today()
                 self.today.opened = True      
-
-    def q_complete(self):
-        self.completed_task = llcsv.getCompletedTask() #returns a list of strings
-        for task_id in self.completed_task: 
-            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id)
-            
-            # cTask = tkinter.Label(self.completed.scrollable_frame, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
-            #Could be more aesthetically pleasing if the label uses a different frame declared in tasks class 
-            # self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
-    
-
-    def q_upcoming(self):
-        self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
-        for task_id in self.upcoming_tasks:
-            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id)
-            # uTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
-
-    def upcoming_tasks(self):
-      self.upcoming_tasks = llcsv.getUpcomingTask()
 
     #displays the upcoming tasks (tasks not due today) in a GUI format
     def open_upcoming(self, event):
