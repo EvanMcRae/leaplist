@@ -451,8 +451,8 @@ class LeapList(tkinter.Tk):
         if self.current_frame != self.today:
             self.open_frame(self.today, self.today_button)
             if not self.today.opened:
-                #self.task.addTF()
-                self.completed.opened = True
+                self.q_today()
+                self.today.opened = True      
 
     def q_complete(self):
         self.completed_task = llcsv.getCompletedTask() #returns a list of strings
@@ -462,7 +462,7 @@ class LeapList(tkinter.Tk):
             # cTask = tkinter.Label(self.completed.scrollable_frame, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
             #Could be more aesthetically pleasing if the label uses a different frame declared in tasks class 
             # self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
- 
+    
 
     def q_upcoming(self):
         self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings

@@ -221,7 +221,7 @@ def getUpcomingTask():
 
 def getTodayTask():
     today = datetime.now().strftime("%Y-%m-%d")
-    df = pd.read.csv(file_path)
+    df = pd.read_csv(file_path)
     tasksForToday = []
     for i, rows in df.iterrows():
         if rows['Deadline'] == today:
