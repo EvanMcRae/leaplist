@@ -151,12 +151,47 @@ def edit_task(task_ID, task_name, description, work_date, deadline, priority, ta
         print(f"Task ID {task_ID} not found.")
 
 
+def get_task_name(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Task Name"].item()
+
+def get_description(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Description"].item()
+
+def get_work_date(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Work Date"].item()
+
+def get_deadline(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Deadline"].item()
+
+def get_priority(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Priority"].item()
+
+def get_tags(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Tags"].item()
+
+def is_completed(task_ID):
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Status"].item() == "completed"
+
 def getCompletedTask():
     df = pd.read_csv(file_path)
     completedTask = []
     for index, row in df.iterrows():
         if row['Status'] == 'completed':
-            completedTask.append(row['Task Name'])
+            completedTask.append(row['Task ID'])
 
     return completedTask
 
@@ -180,7 +215,7 @@ def getUpcomingTask():
     upcomingTask = []
     for index, row in df.iterrows():
         if row['Deadline'] != curr_date:
-            upcomingTask.append(row['Task Name'])
+            upcomingTask.append(row['Task ID'])
             
     return upcomingTask
 

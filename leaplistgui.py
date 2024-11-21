@@ -15,17 +15,17 @@ from tkcalendar import Calendar
 
 # TODO: add more task functions to this
 class Task():
-    def __init__(self, parent_frame=None, progress_bar=None):
+    def __init__(self, parent_frame=None, progress_bar=None, task_id=None):
         super().__init__()
 
         # to clean up gui bugs :) 
-        if(parent_frame != None):
+        if parent_frame != None:
             # pass parent frame and progress bar from add_task
             self.frame = ttk.Frame(parent_frame) # , bg = '#605d60'
             self.frame.pack(padx = 20, pady = 20, fill = 'x', expand = True)
             self.progress_bar = progress_bar
 
-            self.task_id = 0
+            self.task_id = task_id
             self.check = tkinter.Checkbutton()
             self.label = tkinter.Label()
             self.completed = tkinter.BooleanVar()
@@ -34,8 +34,6 @@ class Task():
 
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
-
-            self.add_task_frame.pack(expand = True, fill = 'both')
 
             # user input
             self.user_entry = tkinter.Entry(self.add_task_frame)
@@ -62,6 +60,10 @@ class Task():
             self.deadline = self.calendar.get_date()
             self.calendar_popup = None
 
+            self.description = ""
+            self.tags = ""
+            self.priority = ""
+
             # add deadline button
             self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
             self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
@@ -86,6 +88,25 @@ class Task():
             self.label.pack(fill = 'both', side = 'left', anchor = 'w', ipadx = 15)
             self.view_task_frame.bind('<Double-Button-1>', self.edit_task)
             self.label.bind('<Double-Button-1>', self.edit_task)
+
+            if self.task_id != None:
+                task_name = llcsv.get_task_name(task_id)
+                self.label.config(text = task_name)
+                self.user_entry.insert(0, task_name)
+                if len(task_name) > 0:
+                    self.save_button.config(state = 'normal')
+                    self.save_button.config(cursor = 'hand2')
+                self.deadline = llcsv.get_deadline(task_id)
+                self.work_date = llcsv.get_work_date(task_id)
+                self.description = llcsv.get_description(task_id)
+                self.tags = llcsv.get_tags(task_id)
+                self.priority = llcsv.get_priority(task_id)
+                if llcsv.is_completed(task_id):
+                    self.check.config(state = 'active')
+                    self.check.select()
+                self.view_task_frame.pack(fill = 'both', expand = True)
+            else:
+                self.add_task_frame.pack(expand = True, fill = 'both')
 
     #displays the calendar in the position described along with the buttons for the GUI
     def open_calendar(self, date, func):
@@ -263,6 +284,8 @@ class ScrollableFrame(ttk.Frame):
         style.configure("LeapList.TFrame", background = '#8e9294')
         self.canvas.bind('<Configure>', self._resize_scrollable_frame)
         self.canvas.event_generate("<Configure>")
+        
+        self.opened = False
     
     def bind_events(self):
         self.canvas.bind_all('<MouseWheel>', self._on_mousewheel)
@@ -427,21 +450,25 @@ class LeapList(tkinter.Tk):
     def open_today(self, event):
         if self.current_frame != self.today:
             self.open_frame(self.today, self.today_button)
-            #self.task.addTF()
+            if not self.today.opened:
+                #self.task.addTF()
+                self.completed.opened = True
 
     def q_complete(self):
         self.completed_task = llcsv.getCompletedTask() #returns a list of strings
-        for task in self.completed_task: 
-            self.cTask = tkinter.Label(self.completed, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
+        for task_id in self.completed_task: 
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id)
+            
+            # cTask = tkinter.Label(self.completed.scrollable_frame, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
             #Could be more aesthetically pleasing if the label uses a different frame declared in tasks class 
-            self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
+            # self.cTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
  
 
     def q_upcoming(self):
         self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
-        for task in self.upcoming_tasks:
-            self.uTask = tkinter.Label(self.upcoming, text=task, fg='#fff', bg='#605d60',font=('Arial', '20'))
-            self.uTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
+        for task_id in self.upcoming_tasks:
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id)
+            # uTask.pack(fill='both', expand=True, anchor='w', ipadx=15)
 
     def upcoming_tasks(self):
       self.upcoming_tasks = llcsv.getUpcomingTask()
@@ -451,14 +478,18 @@ class LeapList(tkinter.Tk):
         if self.current_frame != self.upcoming:
             self.open_frame(self.upcoming, self.upcoming_button)
             #self.add_task_frame.pack()
-            self.q_upcoming()
+            if not self.upcoming.opened:
+                self.q_upcoming()
+                self.upcoming.opened = True
 
     #displays all completed tasks
     def open_completed(self, event):
         if self.current_frame != self.completed:
             self.open_frame(self.completed, self.completed_button)
             #self.add_task_frame.pack_forget()
-            self.q_complete()
+            if not self.completed.opened:
+                self.q_complete()
+                self.completed.opened = True
 
     #opens productivity frame
     def open_productivity(self, event):
@@ -489,10 +520,10 @@ class LeapList(tkinter.Tk):
     def add_task(self):
         new_task = Task(self.current_frame.scrollable_frame, self.footer.progress)
         # TODO: Don't add task to current frame, add it to whatever it belongs in!
-        if self.current_frame == self.today:
-            self.today_tasks.append(new_task)
-        else:
-            self.upcoming_tasks.append(new_task)
+        # if self.current_frame == self.today:
+        #     self.today_tasks.append(new_task)
+        # else:
+        #     self.upcoming_tasks.append(new_task)
         self.current_frame.bind_events()
         
     #progress bar function
