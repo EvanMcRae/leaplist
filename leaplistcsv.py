@@ -194,9 +194,13 @@ def getTodayTask():
 
     return tasksForToday
 
-def create_upcoming_list():
-    pass
-def create_today_list():
-    pass
+#this function returns a list of comppleted tasks for the completed logbook
 def create_completed_list():
-    pass
+    df = pd.read.csv(file_path)
+    completedTasks = []
+
+    for i, rows in df.iterrows():
+        if rows['Status'] == 'completed':
+            completedTasks.append(rows['Task Name'])
+
+    return completedTasks
