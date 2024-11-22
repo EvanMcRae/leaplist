@@ -7,6 +7,7 @@ import sys
 import leaplistcsv as llcsv
 import datetime
 from tkcalendar import Calendar
+from playsound import playsound
 
 # fixes some ugly blurring on windows
 # if sys.platform == "win32":
@@ -527,6 +528,8 @@ class LeapList(tkinter.Tk):
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
+        #plays sound
+        playsound('leapListFS.mp3')
         self.hiTaskClass()
 
 # create the application
