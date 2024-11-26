@@ -35,7 +35,9 @@ def daily_view():
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Today")
     
-    plt.show()
+    #plt.show()
+    plt.savefig('daily_fig.png')
+    return 'daily_fig.png'
 
 # For Monthly Tasks -------------------------------------------------------------------------------------------
 def monthly_view(month):
@@ -56,11 +58,12 @@ def monthly_view(month):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels)        
-    plt.show()
+    #plt.show()
+    plt.savefig('monthly_fig.png')
+    return 'monthly_fig.png'
 
 # For Specific Tag Tasks -------------------------------------------------------------------------------------------
 def tag_task(tag_id):
-    print("tag task running")
     for index, row in data.iterrows():
         if row['Tags'] == tag_id:
             if row['Status'] == 'completed':
@@ -75,12 +78,48 @@ def tag_task(tag_id):
     plt.ylabel("Amount of Specific Tag Tasks Completed")
     
     # Show the plot
-    plt.show()
+    #plt.show()
+    plt.savefig('tag_fig.png')
+    return 'tag_fig.png'
     
+#For specific time frame tasks -------------------------------------------------------------------------
 def specific_date(start_date, end_date):
-    return None
+    task_list = {}
+
+    iter = int(start_date[8:9]+1)
+    # Determine if task is on current day for daily tasks
+    for index, row in data.iterrows():
+        if row["Work Date"]  :
+            print(row["Task Name"])
+            # Calculate how much of the task is completed
+            percentage = float(row["Time Input"]) / float(row["Completion Time"])
+            task_list.update({row["Task Name"]: percentage})
+    
+    x = list(task_list.keys())
+    y = list(task_list.values())
+
+    fig = plt.figure(figsize=(10, 5))
+
+    plt.bar(x, y, color='green', width=0.4)
+    
+	# Set the x and y axis limits to start from 0
+    plt.xlim(-0.5, len(x))  # Ensure the bars have space and are centered on the x-axis
+    plt.ylim(0, 1)  # y-axis starts from 0 and goes up to 100% (since it's a percentage)
+    
+    # Label Plot
+    plt.title("Daily Tasks")
+    plt.xlabel("Task")
+    plt.ylabel("Percentage Completed of Tasks for Today")
+    
+    plt.show()
+
+# For tasks with a specific task and shows how much time was spent on task
 def tag_task_time(tags):
-    return None
+    for index, row in data.iterrows():
+        if row["Tags"] == tags:
+
+
+# For specific tasks within a time frame and how long was spent on each task
 def date_time(start_date, end_date):
     return None
 
@@ -102,7 +141,7 @@ def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
             return date_time(start_date, end_date)
 
 if __name__ == "__main__":
-        
+
     daily = None
     start_date = None
     end_date = None
