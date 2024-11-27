@@ -16,7 +16,7 @@ from playsound import playsound
 
 # TODO: add more task functions to this
 class Task():
-    def __init__(self, parent_frame=None, progress_bar=None, task_id=None):
+    def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None):
         super().__init__()
 
         # to clean up gui bugs :) 
@@ -56,14 +56,17 @@ class Task():
             # calendar + default work date and deadline
             self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
             self.calendar_open = False
-            # TODO do we want these to be the default?
+
             self.work_date = self.calendar.get_date()
-            self.deadline = self.calendar.get_date()
+            self.deadline = None
+            
             self.calendar_popup = None
 
             self.description = ""
             self.tags = ""
             self.priority = ""
+
+            self.refresh = refresh
 
             # add deadline button
             self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
@@ -186,10 +189,8 @@ class Task():
             self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
         else:
             llcsv.edit_task(self.task_id, task, description, self.work_date, self.deadline, priority, tags)
-
-        self.label.config(text = task)
-        self.add_task_frame.pack_forget()
-        self.view_task_frame.pack(fill = 'both', expand = True)
+        
+        self.refresh(self)
     
     #complete_task function
     def complete_task(self):
@@ -203,6 +204,7 @@ class Task():
                 popup.destroy()
                 self.check.config(state = 'active')
                 self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
+                self.refresh(self)
 
             #using a popup for now with the spinboxes
             self.check.config(state = 'disabled')
@@ -225,14 +227,10 @@ class Task():
             #when user hits 'ok' button, call the llcsv function to update based on input
             ok_button = tkinter.Button(popup, text="OK", command=confirm_completion)
             ok_button.pack()
-
-            # TODO: move task to completed page
-            print('task completed')
         else:
-            # TODO: pack_forget task from completed page and move it back to appropriate page
             llcsv.uncomplete_task(self.task_id)
-            print('task uncompleted')
             self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
+            self.refresh(self)
             pass
 
 
@@ -261,8 +259,7 @@ class Task():
 
     def addTF(self):
         self.add_task_frame.pack()
-
-
+        
 class ScrollableFrame(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
@@ -427,6 +424,11 @@ class LeapList(tkinter.Tk):
         self.productivity = ScrollableFrame(self)
         self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        #need to add drop down to select custom date range or monthly or today 
+        #need to add a drop down to select tags, which will need to detect already populated tags
+        #check box to view time input into tasks
+        # use get_all_tags then 
+        
 
         # add task button
         self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
@@ -450,17 +452,17 @@ class LeapList(tkinter.Tk):
     def q_today(self):
         self.today_task = llcsv.getTodayTask()
         for task_id in self.today_task:
-            tTask = Task(self.today.scrollable_frame, self.footer.progress, task_id)
+            tTask = Task(self.today.scrollable_frame, self.footer.progress, task_id, self.refresh)
 
     def q_complete(self):
         self.completed_task = llcsv.getCompletedTask() #returns a list of strings
         for task_id in self.completed_task: 
-            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id)
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id, self.refresh)
 
     def q_upcoming(self):
         self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
         for task_id in self.upcoming_tasks:
-            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id)
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id, self.refresh)
 
     #### SIDEBAR BUTTON COMMANDS ####
     #displays the tasks that are due today in a GUI format
@@ -509,12 +511,7 @@ class LeapList(tkinter.Tk):
 
     #adds task
     def add_task(self):
-        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress)
-        # TODO: Don't add task to current frame, add it to whatever it belongs in!
-        # if self.current_frame == self.today:
-        #     self.today_tasks.append(new_task)
-        # else:
-        #     self.upcoming_tasks.append(new_task)
+        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh)
         self.current_frame.bind_events()
         
     #progress bar function
@@ -531,6 +528,15 @@ class LeapList(tkinter.Tk):
         #plays sound
         playsound('leapListFS.mp3')
         self.hiTaskClass()
+
+    def refresh(self, task):
+        if llcsv.is_completed(task.task_id):
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+        elif llcsv.is_today(task.task_id):
+            tTask = Task(self.today.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+        else:
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+        task.frame.destroy()
 
 # create the application
 if __name__ == '__main__':

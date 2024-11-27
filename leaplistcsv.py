@@ -171,6 +171,12 @@ def get_deadline(task_ID):
     index = df[df["Task ID"] == task_ID].index
     return df.loc[index, "Deadline"].item()
 
+def is_today(task_ID):
+    curr_date = datetime.now().strftime("%Y-%m-%d")
+    df = pd.read_csv(file_path)
+    index = df[df["Task ID"] == task_ID].index
+    return df.loc[index, "Work Date"].item() == curr_date
+
 def get_priority(task_ID):
     df = pd.read_csv(file_path)
     index = df[df["Task ID"] == task_ID].index
@@ -214,7 +220,7 @@ def getUpcomingTask():
     df = pd.read_csv(file_path)
     upcomingTask = []
     for index, row in df.iterrows():
-        if row['Deadline'] != curr_date and not is_completed(row['Task ID']):
+        if row['Work Date'] != curr_date and not is_completed(row['Task ID']):
             upcomingTask.append(row['Task ID'])
             
     return upcomingTask
@@ -224,7 +230,7 @@ def getTodayTask():
     df = pd.read_csv(file_path)
     tasksForToday = []
     for i, rows in df.iterrows():
-        if rows['Deadline'] == today and not is_completed(rows['Task ID']):
+        if rows['Work Date'] == today and not is_completed(rows['Task ID']):
             tasksForToday.append(rows['Task ID'])
     return tasksForToday
 
@@ -238,3 +244,13 @@ def create_completed_list():
             completedTasks.append(rows['Task Name'])
 
     return completedTasks
+
+#This function finds all the unique tags in the csv 
+#It will be use to populate dropdown menus for the visualizations
+# and when a user wants to tag a task it can offer a recommendation
+def get_all_tags():
+    df = pd.read.csv(file_path)
+    taskTags = df["Tags"].unique()
+    #remove this later, using for testing
+    print(taskTags)
+    return taskTags
