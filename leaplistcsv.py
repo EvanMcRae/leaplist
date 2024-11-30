@@ -236,7 +236,7 @@ def getTodayTask():
 
 #this function returns a list of comppleted tasks for the completed logbook
 def create_completed_list():
-    df = pd.read.csv(file_path)
+    df = pd.read_csv(file_path)
     completedTasks = []
 
     for i, rows in df.iterrows():
@@ -249,8 +249,11 @@ def create_completed_list():
 #It will be use to populate dropdown menus for the visualizations
 # and when a user wants to tag a task it can offer a recommendation
 def get_all_tags():
-    df = pd.read.csv(file_path)
-    taskTags = df["Tags"].unique()
-    #remove this later, using for testing
-    print(taskTags)
+    df = pd.read_csv(file_path)
+
+    taskTags = df["Tags"].dropna().unique()
+    taskTags = [str(tag) for tag in taskTags]
+
+    print("Available Tags:", taskTags)
+
     return taskTags
