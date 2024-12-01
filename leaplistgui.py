@@ -6,16 +6,38 @@ import os
 import sys
 import leaplistcsv as llcsv
 import plotCSV as pCSV
-import datetime
-from tkcalendar import Calendar
-#from playsound import playsound
+import math
+from datetime import datetime
+from tkcalendar import Calendar, DateEntry
+
+if sys.platform == "win32":
+    from playsound import playsound
+elif sys.platform == "darwin":
+    # TODO add different playsound package here for macos
+    pass
 
 # fixes some ugly blurring on windows
 # if sys.platform == "win32":
 #     from ctypes import windll
 #     windll.shcore.SetProcessDpiAwareness(1)
 
-# TODO: add more task functions to this
+# SOURCE: https://stackoverflow.com/questions/72102048/is-there-a-way-to-have-the-date-entry-calendar-show-up-in-a-blank-date-entry-fie
+class CustomDateEntry(DateEntry):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.old_parse_date = self.parse_date
+        self.parse_date = self.new_parse_date
+        
+    def _validate_date(self):
+        if not self.get():
+            return True
+        return super()._validate_date()
+
+    def new_parse_date(self, text):
+        if not text:
+            return datetime.now() # return some default date
+        return self.old_parse_date(text) # runs original function
+
 class Task():
     def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None):
         super().__init__()
@@ -37,51 +59,44 @@ class Task():
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
 
-            # user input
-            self.user_entry = tkinter.Entry(self.add_task_frame)
-            self.user_entry.config(font = ('Arial', 15))
+            # task name input
+            self.task_name_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Name: ', font = ('Arial', 15), justify = 'left')
+            self.task_name_label.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
+            self.task_name_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
+            self.task_name_entry.config(width=25)
+            self.task_name_entry.grid(column = 1, row = 0 , padx = (10, 10), pady = 10)
+            self.task_name_entry.focus_set()
+            self.task_name_entry.bind("<KeyRelease>", self.on_type)
 
-            # hexadecimal for font color
-            self.user_entry.config(bg = '#fff')
-            self.user_entry.config(fg = '#000')
-
-            #We can always disable the text box when we don't want users to type anything.
-            #self.user_entry.config(state= 'disabled')
-
-            #does not limit amount of characters passed; limits amount of characters displayed
-            self.user_entry.config(width=25)
-            self.user_entry.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
-            self.user_entry.focus_set()
-            self.user_entry.bind("<KeyRelease>", self.on_type)
-
-            # calendar + default work date and deadline
-            self.calendar = Calendar(self.frame, selectmode = 'day', date_pattern = 'yyyy-mm-dd')
-            self.calendar_open = False
-
-            self.work_date = self.calendar.get_date()
+            self.work_date = datetime.now().strftime('%Y-%m-%d')
             self.deadline = None
-            
-            self.calendar_popup = None
 
             self.description = ""
-            self.tags = ""
+            self.tags = "" # TODO HIGHEST PRIO
             self.priority = ""
 
             self.refresh = refresh
 
-            # add deadline button
-            self.add_deadline_button = ttk.Button(self.add_task_frame, text = 'Add Deadline', command = self.enter_deadlinedate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
-            self.add_deadline_button.grid(column = 1, row = 0, padx = (0, 10), pady = 10)
+            # add deadline entry
+            self.deadline_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
+            self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10)
+            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now())
+            self.deadline_entry.grid(column = 1, row = 1, padx = (0, 10), pady = 10)
+            self.deadline_entry.delete(0, "end")
+            self.deadline_none_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.clear_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
+            self.deadline_none_button.grid(column = 2, row = 1, padx = (0, 10), pady = 10)
 
-            # add work date
-            self.add_work_date_button = ttk.Button(self.add_task_frame, text = 'Add Work Date', command = self.enter_workdate, style = 'TaskButton.TButton', cursor = 'hand2', width = 20)
-            self.add_work_date_button.grid(column = 2, row = 0, padx = (0, 10), pady = 10)
+            # add work date entry
+            self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15))
+            self.work_date_label.grid(column = 0, row = 2 , padx = (10, 10), pady = 10)
+            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now())
+            self.work_date_entry.grid(column = 1, row = 2, padx = (0, 10), pady = 10)
 
             self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
-            self.save_button.grid(column = 3, row = 0, padx = (0, 10), pady = 10)
+            self.save_button.grid(column = 0, row = 3, padx = (0, 10), pady = 10)
 
             self.remove_button = ttk.Button(self.add_task_frame, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
-            self.remove_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
+            self.remove_button.grid(column = 1, row = 3, padx = (0, 10), pady = 10)
 
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             
@@ -98,12 +113,17 @@ class Task():
                 self.task_id = task_id
                 task_name = llcsv.get_task_name(task_id)
                 self.label.config(text = task_name)
-                self.user_entry.insert(0, task_name)
+                self.task_name_entry.insert(0, task_name)
                 if len(task_name) > 0:
                     self.save_button.config(state = 'normal')
                     self.save_button.config(cursor = 'hand2')
                 self.deadline = llcsv.get_deadline(task_id)
                 self.work_date = llcsv.get_work_date(task_id)
+                if not math.isnan(self.deadline):
+                    self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
+                else:
+                    self.deadline_entry.delete(0, "end")
+                self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
                 self.description = llcsv.get_description(task_id)
                 self.tags = llcsv.get_tags(task_id)
                 self.priority = llcsv.get_priority(task_id)
@@ -113,64 +133,18 @@ class Task():
                 self.view_task_frame.pack(fill = 'both', expand = True)
             else:
                 self.add_task_frame.pack(expand = True, fill = 'both')
-
-    #displays the calendar in the position described along with the buttons for the GUI
-    def open_calendar(self, date, func):
-        self.calendar_popup = tkinter.Toplevel()
-        date_key = date.split('-')
-        self.calendar = Calendar(self.calendar_popup, selectmode = 'day', date_pattern = 'yyyy-mm-dd', year = int(date_key[0]), month = int(date_key[1]), day = int(date_key[2]))
-        self.calendar.pack()
-        self.calendar_open = True
-        self.save_button.config(state = 'disabled')
-        self.save_button.config(cursor = 'arrow')
-        self.remove_button.config(state = 'disabled')
-        self.remove_button.config(cursor = 'arrow')
-        ok_button = tkinter.Button(self.calendar_popup, text="OK", command=func)
-        ok_button.pack()
-
-    def close_calendar(self):
-        self.calendar_popup.destroy()
-        self.calendar_open = False
-        self.remove_button.config(state = 'normal')
-        self.remove_button.config(cursor = 'hand2')
-        if len(self.user_entry.get()) > 0:
-            self.save_button.config(state = 'normal')
-            self.save_button.config(cursor = 'hand2')
     
     #functions for entering data
     def on_type(self, event):
-        if len(self.user_entry.get()) > 0 and not self.calendar_open:
+        if len(self.task_name_entry.get()) > 0 and not self.calendar_open:
             self.save_button.config(state = 'normal')
             self.save_button.config(cursor = 'hand2')
         else:
             self.save_button.config(state = 'disabled')
             self.save_button.config(cursor = 'arrow')
 
-    def enter_workdate(self):
-        if not self.calendar_open:
-            self.open_calendar(self.work_date, self.enter_workdate)
-            self.add_deadline_button.config(state = 'disabled')
-            self.add_deadline_button.config(cursor = 'arrow')
-            self.add_work_date_button.config(text = 'Confirm Work Date')
-        else:
-            self.work_date = self.calendar.get_date()
-            self.close_calendar()
-            self.add_deadline_button.config(state = 'normal')
-            self.add_deadline_button.config(cursor = 'hand2')
-            self.add_work_date_button.config(text = 'Add Work Date')
-
-    def enter_deadlinedate(self):
-        if not self.calendar_open:
-            self.open_calendar(self.deadline, self.enter_deadlinedate)
-            self.add_work_date_button.config(state = 'disabled')
-            self.add_work_date_button.config(cursor = 'arrow')
-            self.add_deadline_button.config(text = 'Confirm Deadline')
-        else:
-            self.deadline = self.calendar.get_date()
-            self.close_calendar()
-            self.add_work_date_button.config(state = 'normal')
-            self.add_work_date_button.config(cursor = 'hand2')
-            self.add_deadline_button.config(text = 'Add Deadline')
+    def clear_deadline(self):
+        self.deadline_entry.delete(0, "end")
 
     #brings up a box to add a task and notes if wanted
     def save_task(self):
@@ -182,7 +156,7 @@ class Task():
         tags = "" # optional
         
         #retrieve text from user entry
-        task = self.user_entry.get()
+        task = self.task_name_entry.get()
         
         #test call to function in csv.py     
         if (self.task_id == 0):   
@@ -252,11 +226,7 @@ class Task():
         self.editing = True
         self.view_task_frame.pack_forget()
         self.add_task_frame.pack(fill = 'both', expand = True)
-        pass
-
-    #This is the test function used to prove we can intermingle classes - DAB
-    def dontBeAStranger(self):
-        print("Hello from the task class!!")
+        self.deadline_entry.delete(0, "end")
 
     def addTF(self):
         self.add_task_frame.pack()
@@ -441,7 +411,7 @@ class LeapList(tkinter.Tk):
         self.time_dropdown.set("Today")
 
         #producitivy dropdown for task tags
-        self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
+        self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag (Optional)', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         tags = ["None"] + llcsv.get_all_tags()
         self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = tags, state = 'readonly')
@@ -450,7 +420,7 @@ class LeapList(tkinter.Tk):
 
         #productivity checkbox for time to complete tasks
         self.productivity_checkbox_var = tkinter.BooleanVar(value=False)
-        self.productivity_checkbox = tkinter.Checkbutton(self.productivity.scrollable_frame, text = 'Include Time to Complete Tasks in Productivity Visualization?', variable= self.productivity_checkbox_var, font = ('Arial', 15), foreground = '#fff', bg = '#8e9294', cursor = 'hand2')
+        self.productivity_checkbox = tkinter.Checkbutton(self.productivity.scrollable_frame, text = 'Include Time to Complete Tasks in Productivity Visualization? (Optional)', variable= self.productivity_checkbox_var, font = ('Arial', 15), foreground = '#fff', bg = '#8e9294', cursor = 'hand2')
         self.productivity_checkbox.pack(ipadx = 15, ipady = 15, anchor = 'nw')
 
         #Create Visualization Button
@@ -483,18 +453,18 @@ class LeapList(tkinter.Tk):
     def get_time_dropdown_selection(self, event):
         #grab the selection
         selected_option = self.time_dropdown.get()
-        #if today, currently setting daily to true
+        #if today, grab today's date
         if selected_option == "Today":
             self.start_date = None
             self.end_date = None
             self.month = None
-            self.daily = True
-        #if this month, currently setting month to true
+            self.daily = self.daily = datetime.now().strftime("%Y-%m-%d")
+        #if this month, grab current month and year
         elif selected_option == "This Month":
             self.start_date = None
             self.end_date = None
             self.daily = None
-            self.month = True
+            self.month = datetime.now().strftime("%Y-%m")
         #if custom, calls function to bring up popup for calendar selection
         elif selected_option == "Custom":
             self.daily = None
@@ -507,10 +477,12 @@ class LeapList(tkinter.Tk):
     def calendar_for_productivity(self):
         def set_start_date():
             self.start_date = self.calendar.get_date()
+            print(self.start_date)
             self.calendar_popup.destroy()
 
         def set_end_date():
             self.end_date = self.calendar.get_date()
+            print(self.end_date)
             self.calendar_popup.destroy()
 
         self.calendar_popup = tkinter.Toplevel()
@@ -621,17 +593,13 @@ class LeapList(tkinter.Tk):
     #progress bar function
     def progress_bar(self):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
-
-    #Just a test, I don't want to make any drastic changes w/o approval -dab
-    def hiTaskClass(self):
-        self.task.dontBeAStranger()
     
     # runs upon clicking logo (proof of concept for losing the buttons, could be a cool easter egg maybe)
     def on_logo_click(self, event):
         print('clicked me!')
         #plays sound
-        #playsound('leapListFS.mp3')
-        self.hiTaskClass()
+        if sys.platform == "win32":
+            playsound('leapListFS.mp3')
 
     def refresh(self, task):
         if llcsv.is_completed(task.task_id):
