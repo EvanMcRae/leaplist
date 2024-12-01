@@ -230,8 +230,13 @@ def getTodayTask():
     df = pd.read_csv(file_path)
     tasksForToday = []
     for i, rows in df.iterrows():
-        if rows['Work Date'] == today and not is_completed(rows['Task ID']):
-            tasksForToday.append(rows['Task ID'])
+        if not is_completed(rows['Task ID']):
+            if rows['Work Date'] == today:
+                tasksForToday.append(rows['Task ID'])
+            elif datetime.strptime(rows['Work Date'], '%Y-%m-%d').date() < datetime.now().date():
+                df.loc[i, "Work Date"] = today
+                df.to_csv(file_path, index=False)
+                tasksForToday.append(rows['Task ID'])
     return tasksForToday
 
 #this function returns a list of comppleted tasks for the completed logbook
