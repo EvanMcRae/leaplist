@@ -71,11 +71,9 @@ def daily_view_pychart():
 def monthly_view(month):
     completed = 0
     uncompleted = 0
-    # Get current month in YYYY-MM format
-    current_month = datetime.now().strftime("%Y-%m")
 
     for index, row in data.iterrows():
-        if row['Work Date'][0:7] == current_month:
+        if row['Work Date'][0:7] == month:
             if row["Status"] == 'completed':
                 completed += 1
             else:
