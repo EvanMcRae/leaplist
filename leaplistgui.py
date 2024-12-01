@@ -79,7 +79,7 @@ class Task():
             # add deadline entry
             self.deadline_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
             self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10)
-            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now())
+            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), showweeknumbers=False)
             self.deadline_entry.grid(column = 1, row = 1, padx = (0, 10), pady = 10)
             self.deadline_entry.delete(0, "end")
             self.deadline_none_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.clear_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
@@ -88,7 +88,7 @@ class Task():
             # add work date entry
             self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15))
             self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10)
-            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now())
+            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), showweeknumbers=False)
             self.work_date_entry.grid(column = 1, row = 2, padx = (0, 10), pady = 10)
 
             # description input
@@ -505,7 +505,7 @@ class LeapList(tkinter.Tk):
             self.calendar_popup.destroy()
 
         self.calendar_popup = tkinter.Toplevel()
-        self.calendar = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd')
+        self.calendar = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd', showweeknumbers=False)
         self.calendar.pack()
 
         ttk.Button(self.calendar_popup, text='Set Start Date', command=set_start_date).pack()
