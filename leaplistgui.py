@@ -125,29 +125,49 @@ class Task():
 
             if task_id != None:
                 self.task_id = task_id
+
                 task_name = llcsv.get_task_name(task_id)
                 self.label.config(text = task_name)
                 self.task_name_entry.insert(0, task_name)
-                if len(task_name) > 0:
+                if len(str(task_name)) > 0:
                     self.save_button.config(state = 'normal')
                     self.save_button.config(cursor = 'hand2')
+                
                 self.deadline = llcsv.get_deadline(task_id)
-                self.work_date = llcsv.get_work_date(task_id)
-                self.description = llcsv.get_description(task_id)
                 try:
                     self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
                 except TypeError:
                     self.deadline_entry.delete(0, "end")
                 except ValueError:
                     self.deadline_entry.delete(0, "end")
+
+                self.work_date = llcsv.get_work_date(task_id)
                 self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
+                
                 self.tags = llcsv.get_tags(task_id)
-                self.tags_entry.insert(0, self.tags)
-                self.description_entry.insert(0, self.description)
-                self.priority = llcsv.get_priority(task_id)
+                try:
+                    if math.isnan(self.tags):
+                        self.tags = ""
+                except TypeError:
+                    pass
+                finally:
+                    self.tags_entry.insert(0, self.tags)
+
+                self.description = llcsv.get_description(task_id)
+                try:
+                    if math.isnan(self.description):
+                        self.description = ""
+                except TypeError:
+                    pass
+                finally:
+                    self.description_entry.insert(0, self.description)
+                    
+                self.priority = llcsv.get_priority(task_id) # TODO
+
                 if llcsv.is_completed(task_id):
                     self.check.config(state = 'active')
                     self.check.select()
+                
                 self.view_task_frame.pack(fill = 'both', expand = True)
             else:
                 self.add_task_frame.pack(expand = True, fill = 'both')

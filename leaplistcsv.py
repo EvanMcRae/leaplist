@@ -1,5 +1,8 @@
 #leaplist CSV set up
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import pandas as pd
 import os
 from datetime import datetime
@@ -25,6 +28,7 @@ if not os.path.exists(file_path):
     cols = ["Task ID", "Task Name", "Description", "Work Date", "Deadline", "Priority",
                "Status", "Creation Time", "Tags", "Time Input", "Completion Time"]
     df = pd.DataFrame(columns=cols)
+    df["Task Name"] = df["Task Name"].astype("string")
     df["Description"] = df["Description"].astype("string")
     df["Priority"] = df["Priority"].astype("string")
     df["Tags"] = df["Tags"].astype("string")
