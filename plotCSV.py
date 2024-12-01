@@ -36,9 +36,11 @@ def daily_view():
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Today")
     
-    #plt.show()
-    plt.savefig('daily_fig.png')
-    return 'daily_fig.png'
+    output_dir = "daily_fig"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "daily_fig.png")
+    plt.savefig(output_path)      
+    return output_path
 
 #Py chart to represent information
 def daily_view_pychart():
@@ -62,9 +64,12 @@ def daily_view_pychart():
     y = [completed, uncompleted]
     mylabels = ["Completed", "Uncompleted"]
 
-    plt.pie(y, labels=mylabels)        
-    plt.savefig('daily_fig.png')
-    return 'daily_fig.png'
+    plt.pie(y, labels=mylabels)  
+    output_dir = "daily_fig"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "daily_fig.png")
+    plt.savefig(output_path)      
+    return output_path
 
 
 # For Monthly Tasks -----------------------------------------------------------------------------------------------------
@@ -105,8 +110,11 @@ def tag_task(tag_id):
     plt.xlabel(tag_id)
     plt.ylabel("Amount of Specific Tag Tasks Completed")
     
-    plt.savefig('tag_fig.png')
-    return 'tag_fig.png'
+    output_dir = "tag_fig"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "tag_fig.png")
+    plt.savefig(output_path)      
+    return output_path
 
 # For tasks with a specific task and shows how much time was spent on task
 def tag_task_time(tags):
@@ -138,16 +146,16 @@ def tag_task_time(tags):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Today")
     
-    #plt.show()
-    plt.savefig('daily_fig.png')
-    return 'daily_fig.png'
+    output_dir = "daily_figure"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "daily_figure.png")
+    plt.savefig(output_path)      
+    return output_path
 
     
 #For specific time frame tasks ---------------------------------------------------------------------------------------
 def specific_date(start_date, end_date):
     task_list = {}
-    completed = 0
-    uncompleted = 0
 
     iter = int(start_date[8:9]+1)
     # Determine if task is on current day for daily tasks
@@ -161,11 +169,14 @@ def specific_date(start_date, end_date):
 
     # Label Plot
     plt.title("Tag Specific Tasks")
-    plt.xlabel(tag_id)
+    plt.xlabel("Tags within Date Range")
     plt.ylabel("Amount of Specific Tag Tasks Completed")
     
-    plt.savefig('tag_fig.png')
-    return 'tag_fig.png'
+    output_dir = "tag_fig"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "tag_fig.png")
+    plt.savefig(output_path)      
+    return output_path
 
 # For specific tasks within a time frame and how long was spent on each task
 def date_time(start_date, end_date):
@@ -195,8 +206,11 @@ def date_time(start_date, end_date):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Selected Dates")
     
-    plt.savefig('sel_date_fig.png')
-    return 'sel_date_fig.png'
+    output_dir = "sel_date_fig"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "sel_date_fig.png")
+    plt.savefig(output_path)      
+    return output_path
 
 # Function to create plot based on productivity parameters
 def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
