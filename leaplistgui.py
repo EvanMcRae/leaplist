@@ -61,10 +61,9 @@ class Task():
 
             # task name input
             self.task_name_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Name: ', font = ('Arial', 15), justify = 'left')
-            self.task_name_label.grid(column = 0, row = 0 , padx = (10, 10), pady = 10)
+            self.task_name_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10)
             self.task_name_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
-            self.task_name_entry.config(width=25)
-            self.task_name_entry.grid(column = 1, row = 0 , padx = (10, 10), pady = 10)
+            self.task_name_entry.grid(column = 1, row = 0, padx = (10, 10), pady = 10)
             self.task_name_entry.focus_set()
             self.task_name_entry.bind("<KeyRelease>", self.on_type)
 
@@ -72,7 +71,7 @@ class Task():
             self.deadline = None
 
             self.description = ""
-            self.tags = "" # TODO HIGHEST PRIO
+            self.tags = ""
             self.priority = ""
 
             self.refresh = refresh
@@ -88,15 +87,28 @@ class Task():
 
             # add work date entry
             self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15))
-            self.work_date_label.grid(column = 0, row = 2 , padx = (10, 10), pady = 10)
+            self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10)
             self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now())
             self.work_date_entry.grid(column = 1, row = 2, padx = (0, 10), pady = 10)
 
+            # description input
+            # TODO make multiline
+            self.description_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Description: ', font = ('Arial', 15), justify = 'left')
+            self.description_label.grid(column = 0, row = 3, padx = (10, 10), pady = 10)
+            self.description_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
+            self.description_entry.grid(column = 1, row = 3, padx = (10, 10), pady = 10)
+
+            # tags input
+            self.tags_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
+            self.tags_label.grid(column = 0, row = 4, padx = (10, 10), pady = 10)
+            self.tags_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
+            self.tags_entry.grid(column = 1, row = 4, padx = (10, 10), pady = 10)
+
             self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
-            self.save_button.grid(column = 0, row = 3, padx = (0, 10), pady = 10)
+            self.save_button.grid(column = 0, row = 5, padx = (0, 10), pady = 10)
 
             self.remove_button = ttk.Button(self.add_task_frame, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
-            self.remove_button.grid(column = 1, row = 3, padx = (0, 10), pady = 10)
+            self.remove_button.grid(column = 1, row = 5, padx = (0, 10), pady = 10)
 
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             
@@ -128,6 +140,8 @@ class Task():
                     self.deadline_entry.delete(0, "end")
                 self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
                 self.tags = llcsv.get_tags(task_id)
+                self.tags_entry.insert(0, self.tags)
+                self.description_entry.insert(0, self.description)
                 self.priority = llcsv.get_priority(task_id)
                 if llcsv.is_completed(task_id):
                     self.check.config(state = 'active')
@@ -152,10 +166,9 @@ class Task():
     def save_task(self):
         self.editing = False
 
-        # TODO: Placeholder!! need ways to pass these in
-        self.description = "" # optional
-        self.priority = "" # optional
-        self.tags = "" # optional
+        self.description = self.description_entry.get()
+        self.priority = "" # TODO
+        self.tags = self.tags_entry.get()
         
         # self.deadline = ""
         self.deadline = self.deadline_entry.get_date()
