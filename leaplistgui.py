@@ -5,9 +5,10 @@ from PIL import ImageTk, Image
 import os
 import sys
 import leaplistcsv as llcsv
+import plotCSV as pCSV
 import datetime
 from tkcalendar import Calendar
-from playsound import playsound
+#from playsound import playsound
 
 # fixes some ugly blurring on windows
 # if sys.platform == "win32":
@@ -332,7 +333,12 @@ class ScrollableFrame(ttk.Frame):
 class LeapList(tkinter.Tk):
     def __init__(self):
         super().__init__()
-        
+
+        self.daily = None
+        self.start_date = None
+        self.end_date = None
+        self.month = None
+
         # create window
         self.title('LeapList')
         self.resizable(False, False)
@@ -424,11 +430,108 @@ class LeapList(tkinter.Tk):
         self.productivity = ScrollableFrame(self)
         self.productivity_label = tkinter.Label(self.productivity.scrollable_frame, text = 'Productivity', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
         self.productivity_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-        #need to add drop down to select custom date range or monthly or today 
-        #need to add a drop down to select tags, which will need to detect already populated tags
-        #check box to view time input into tasks
-        # use get_all_tags then 
-        
+
+        # productivity dropdown for time range
+        self.productivity_dropdown_time_range = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Time Range', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
+        self.productivity_dropdown_time_range.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.time_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = ['Today', 'This Month', 'Custom'], state = 'readonly')
+        self.time_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.time_dropdown.set("Today")
+
+        #producitivy dropdown for task tags
+        self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
+        self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        tags = ["None"] + llcsv.get_all_tags()
+        self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = tags, state = 'readonly')
+        self.tags_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.tags_dropdown.set("None")
+
+        #productivity checkbox for time to complete tasks
+        self.productivity_checkbox_var = tkinter.BooleanVar(value=False)
+        self.productivity_checkbox = tkinter.Checkbutton(self.productivity.scrollable_frame, text = 'Include Time to Complete Tasks in Productivity Visualization?', variable= self.productivity_checkbox_var, font = ('Arial', 15), foreground = '#fff', bg = '#8e9294', cursor = 'hand2')
+        self.productivity_checkbox.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+
+        #Create Visualization Button
+        self.create_visualization_button = ttk.Button(self.productivity.scrollable_frame, text = 'Create Visualization', command = self.productivity_visualization, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+        self.create_visualization_button.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+
+        #Get the user selections
+        self.time_dropdown.bind("<<ComboboxSelected>>", self.get_time_dropdown_selection)
+
+    #This probably needs some work to make sure it's communicating with the plot func correctly
+    #I think the custom date range is broken
+    def get_time_dropdown_selection(self, event):
+        #grab the selection
+        selected_option = self.time_dropdown.get()
+        #if today, currently setting daily to true
+        if selected_option == "Today":
+            self.start_date = None
+            self.end_date = None
+            self.month = None
+            self.daily = True
+        #if this month, currently setting month to true
+        elif selected_option == "This Month":
+            self.start_date = None
+            self.end_date = None
+            self.daily = None
+            self.month = True
+        #if custom, calls function to bring up popup for calendar selection
+        elif selected_option == "Custom":
+            self.daily = None
+            self.month = None
+            self.calendar_for_productivity()
+
+    #This function is called when the user selects custom date range
+    #it creates a calendar popup for the user to set the start and end date
+    #you have to bring up calendar, hit set start date, then bring up calendar again and set end date
+    def calendar_for_productivity(self):
+        def set_start_date():
+            self.start_date = self.calendar.get_date()
+            self.calendar_popup.destroy()
+
+        def set_end_date():
+            self.end_date = self.calendar.get_date()
+            self.calendar_popup.destroy()
+
+        self.calendar_popup = tkinter.Toplevel()
+        self.calendar = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd')
+        self.calendar.pack()
+
+        ttk.Button(self.calendar_popup, text='Set Start Date', command=set_start_date).pack()
+        ttk.Button(self.calendar_popup, text='Set End Date', command=set_end_date).pack()
+
+    #This function is called when the user clicks the create visualization button
+    #it gathers all the drop down / check box selections to send to the plot creator
+    def productivity_visualization(self):
+        tag_id = None if self.tags_dropdown.get() == "None" else self.tags_dropdown.get()
+        time_input = self.productivity_checkbox_var.get()
+
+        #saving the returned PNG here, although this might not be the way to do it properly
+        productivity_PNG = pCSV.create_productivity(daily=self.daily, start_date=self.start_date,
+                                                    end_date=self.end_date, month=self.month, tag_id=tag_id,
+                                                    time_input=time_input)
+
+        print("Productivity Visualization Created, now you need to figure out how to display the png")
+        #call a function to display the PNG as a popup
+        self.visualization_popup(productivity_PNG)
+
+    #This function creates a popup window with the productivity visualization png
+    def visualization_popup(self, productivity_PNG):
+        popup = tkinter.Toplevel(self)
+        popup.title("Productivity Visualization")
+        p_image = Image.open(productivity_PNG)
+        photo = ImageTk.PhotoImage(p_image)
+        #probably change the geometry to be bigger?
+        popup.geometry("800x800")
+        popup.resizable(False, False)
+
+        label = tkinter.Label(popup, image=photo)
+        label.image = photo
+        label.pack()
+
+        close_button = ttk.Button(popup, text="Close", command=popup.destroy)
+        close_button.pack()
+
 
         # add task button
         self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
@@ -526,7 +629,7 @@ class LeapList(tkinter.Tk):
     def on_logo_click(self, event):
         print('clicked me!')
         #plays sound
-        playsound('leapListFS.mp3')
+        #playsound('leapListFS.mp3')
         self.hiTaskClass()
 
     def refresh(self, task):

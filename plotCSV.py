@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -84,9 +85,12 @@ def monthly_view(month):
     y = [completed, uncompleted]
     mylabels = ["Completed", "Uncompleted"]
 
-    plt.pie(y, labels=mylabels)        
-    plt.savefig('monthly_fig.png')
-    return 'monthly_fig.png'
+    plt.pie(y, labels=mylabels)
+    output_dir = "monthly_output"
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "monthly_fig.png")
+    plt.savefig(output_path)
+    return output_path
 
 # For Specific Tag Tasks -------------------------------------------------------------------------------------------
 def tag_task(tag_id):
@@ -215,14 +219,16 @@ def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
         if start_date and end_date:
             return date_time(start_date, end_date)
 
-if __name__ == "__main__":
-    
-    daily = None
-    start_date = None
-    end_date = None
-    month = "2024-11" 
-    tag_id = None
-    time_input = None
+    raise ValueError("Invalid parameters: Could not create productivity plot")
 
-    create_productivity(daily, start_date, end_date, month, tag_id, time_input)
+#if __name__ == "__main__":
+    
+    #daily = None
+    #start_date = None
+    #end_date = None
+    #month = "2024-11"
+    #tag_id = None
+    #time_input = None
+
+    #create_productivity(daily, start_date, end_date, month, tag_id, time_input)
     
