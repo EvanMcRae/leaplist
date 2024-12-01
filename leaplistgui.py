@@ -405,8 +405,10 @@ class LeapList(tkinter.Tk):
         self.footer.pack(side = 'bottom', fill = 'x')
 
         #Progress bar child to footer - DAB
-        self.footer.progress = ttk.Progressbar(self, orient = 'horizontal', length = 100, mode = 'determinate')
-        self.footer.progress.pack(pady = 10)
+        self.footer.progress_label = tkinter.Label(self.footer, text = 'Progress:', foreground = '#fff', bg = '#363237', font = ('Arial', 12))
+        self.footer.progress_label.grid(column = 1, row = 0, padx = 10, pady = 10)
+        self.footer.progress = ttk.Progressbar(self.footer, orient = 'horizontal', length = 300, mode = 'determinate')
+        self.footer.progress.grid(column = 2, row = 0, padx = 4, pady = 10)
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
         
         # today frame
@@ -457,6 +459,24 @@ class LeapList(tkinter.Tk):
 
         #Get the user selections
         self.time_dropdown.bind("<<ComboboxSelected>>", self.get_time_dropdown_selection)
+
+        # add task button
+        self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
+        self.add_task_button.grid(column = 0, row = 0, padx = 10, pady = 10)
+
+        # # completed task -- TODO repurpose
+        #     # you need a frame
+        # self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
+        # self.remove_task_frame.pack()
+        #     # a button
+        # self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
+        # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
+
+        self.q_today()
+        self.q_upcoming()
+        self.q_complete()
+
+        self.task = Task()
 
     #This probably needs some work to make sure it's communicating with the plot func correctly
     #I think the custom date range is broken
@@ -531,25 +551,6 @@ class LeapList(tkinter.Tk):
 
         close_button = ttk.Button(popup, text="Close", command=popup.destroy)
         close_button.pack()
-
-
-        # add task button
-        self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.add_task_button.grid(column = 0, row = 0, padx = 10, pady = 10)
-
-        # # completed task -- TODO repurpose
-        #     # you need a frame
-        # self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
-        # self.remove_task_frame.pack()
-        #     # a button
-        # self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
-        # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
-
-        self.q_today()
-        self.q_upcoming()
-        self.q_complete()
-
-        self.task = Task()
 
     #### QUEUE TASKS ####
     def q_today(self):
