@@ -61,9 +61,9 @@ class Task():
 
             # task name input
             self.task_name_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Name: ', font = ('Arial', 15), justify = 'left')
-            self.task_name_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10)
-            self.task_name_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
-            self.task_name_entry.grid(column = 1, row = 0, padx = (10, 10), pady = 10)
+            self.task_name_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10, sticky = 'w')
+            self.task_name_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
+            self.task_name_entry.grid(column = 1, row = 0, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
             self.task_name_entry.focus_set()
             self.task_name_entry.bind("<KeyRelease>", self.on_type)
 
@@ -78,31 +78,33 @@ class Task():
 
             # add deadline entry
             self.deadline_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
-            self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10)
-            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), showweeknumbers=False)
-            self.deadline_entry.grid(column = 1, row = 1, padx = (0, 10), pady = 10)
+            self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10, sticky = 'w')
+            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            self.deadline_entry.grid(column = 1, row = 1, padx = (10, 10), pady = 10, sticky = 'w')
             self.deadline_entry.delete(0, "end")
-            self.deadline_none_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.clear_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
-            self.deadline_none_button.grid(column = 2, row = 1, padx = (0, 10), pady = 10)
+            self.deadline_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
+            self.deadline_reset_button.grid(column = 2, row = 1, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             # add work date entry
-            self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15))
-            self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10)
-            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), showweeknumbers=False)
-            self.work_date_entry.grid(column = 1, row = 2, padx = (0, 10), pady = 10)
+            self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15), justify = 'left')
+            self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
+            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            self.work_date_entry.grid(column = 1, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
+            self.work_date_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_work_date, style = 'TaskButton.TButton', cursor = 'hand2')
+            self.work_date_reset_button.grid(column = 2, row = 2, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             # description input
             # TODO make multiline
             self.description_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Description: ', font = ('Arial', 15), justify = 'left')
-            self.description_label.grid(column = 0, row = 3, padx = (10, 10), pady = 10)
-            self.description_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
-            self.description_entry.grid(column = 1, row = 3, padx = (10, 10), pady = 10)
+            self.description_label.grid(column = 0, row = 3, padx = (10, 10), pady = 10, sticky = 'w')
+            self.description_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
+            self.description_entry.grid(column = 1, row = 3, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
 
             # tags input
             self.tags_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
-            self.tags_label.grid(column = 0, row = 4, padx = (10, 10), pady = 10)
-            self.tags_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25)
-            self.tags_entry.grid(column = 1, row = 4, padx = (10, 10), pady = 10)
+            self.tags_label.grid(column = 0, row = 4, padx = (10, 10), pady = 10, sticky = 'w')
+            self.tags_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
+            self.tags_entry.grid(column = 1, row = 4, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
 
             self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
             self.save_button.grid(column = 0, row = 5, padx = (0, 10), pady = 10)
@@ -159,7 +161,10 @@ class Task():
             self.save_button.config(state = 'disabled')
             self.save_button.config(cursor = 'arrow')
 
-    def clear_deadline(self):
+    def reset_work_date(self):
+        self.work_date_entry.set_date(datetime.now())
+
+    def reset_deadline(self):
         self.deadline_entry.delete(0, "end")
 
     #brings up a box to add a task and notes if wanted
