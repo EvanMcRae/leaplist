@@ -119,12 +119,14 @@ class Task():
                     self.save_button.config(cursor = 'hand2')
                 self.deadline = llcsv.get_deadline(task_id)
                 self.work_date = llcsv.get_work_date(task_id)
-                if not math.isnan(self.deadline):
+                self.description = llcsv.get_description(task_id)
+                try:
                     self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
-                else:
+                except TypeError:
+                    self.deadline_entry.delete(0, "end")
+                except ValueError:
                     self.deadline_entry.delete(0, "end")
                 self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
-                self.description = llcsv.get_description(task_id)
                 self.tags = llcsv.get_tags(task_id)
                 self.priority = llcsv.get_priority(task_id)
                 if llcsv.is_completed(task_id):
@@ -136,7 +138,7 @@ class Task():
     
     #functions for entering data
     def on_type(self, event):
-        if len(self.task_name_entry.get()) > 0 and not self.calendar_open:
+        if len(self.task_name_entry.get()) > 0:
             self.save_button.config(state = 'normal')
             self.save_button.config(cursor = 'hand2')
         else:
@@ -151,19 +153,24 @@ class Task():
         self.editing = False
 
         # TODO: Placeholder!! need ways to pass these in
-        description = "" # optional
-        priority = "" # optional
-        tags = "" # optional
+        self.description = "" # optional
+        self.priority = "" # optional
+        self.tags = "" # optional
         
+        # self.deadline = ""
+        self.deadline = self.deadline_entry.get_date()
+        print(self.deadline_entry.get_date())
+        self.work_date = self.work_date_entry.get_date()
+
         #retrieve text from user entry
         task = self.task_name_entry.get()
         
-        #test call to function in csv.py     
+        #test call to function in csv.py
         if (self.task_id == 0):   
-            self.task_id = llcsv.new_task(task, description, self.work_date, self.deadline, priority, tags)
+            self.task_id = llcsv.new_task(task, self.description, self.work_date, self.deadline, self.priority, self.tags)
             self.progress_bar['value'] = (llcsv.getProgessPerc()) * 100
         else:
-            llcsv.edit_task(self.task_id, task, description, self.work_date, self.deadline, priority, tags)
+            llcsv.edit_task(self.task_id, task, self.description, self.work_date, self.deadline, self.priority, self.tags)
         
         self.refresh(self)
     
@@ -226,7 +233,6 @@ class Task():
         self.editing = True
         self.view_task_frame.pack_forget()
         self.add_task_frame.pack(fill = 'both', expand = True)
-        self.deadline_entry.delete(0, "end")
 
     def addTF(self):
         self.add_task_frame.pack()
