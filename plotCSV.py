@@ -8,42 +8,38 @@ data = pd.read_csv("Leaplist.csv")
 
 
 #Py chart to represent information
-def daily_view_pychart():
-    task_list = {}
+def daily_view_pychart(day):
     completed = 0
     uncompleted = 0
     # Get current date
-    current_date = datetime.now().strftime("%Y-%m-%d")
-
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
-        if row["Work Date"] == current_date:
+        if row["Work Date"] == day:
             if row['Status'] == 'completed':
-                plt.bar(row['Task Name'], 1, color='black')
+                completed += 1
             else:
-                percentage = float(row["Time Input"]) / float(row["Completion Time"])
-                plt.bar(row['Task Name'], percentage, color='limegreen')
+                uncompleted += 1
 
     fig = plt.figure(figsize=(10, 5))
     # create a split of completed tasks in the month
     y = [completed, uncompleted]
     mylabels = ["Completed", "Uncompleted"]
 
-    plt.pie(y, labels=mylabels)  
-    output_dir = "daily_fig"
+    plt.pie(y, labels=mylabels)
+    
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "daily_fig.png")
     plt.savefig(output_path)      
     return output_path
 
 
+
 #For specific time frame tasks ---------------------------------------------------------------------------------------
 def specific_date(start_date, end_date):
-    task_list = {}
     completed = 0
     uncompleted = 0
     
-    iter = int(start_date[8:9]+1)
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
         if row["Work Date"] <= end_date and row["Work Date"] >= start_date:
@@ -57,7 +53,7 @@ def specific_date(start_date, end_date):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels)
-    output_dir = "tag_fig_py"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "tag_fig_py.png")
     plt.savefig(output_path)      
@@ -81,7 +77,8 @@ def monthly_view(month):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels)
-    output_dir = "monthly_output"
+
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "monthly_fig.png")
     plt.savefig(output_path)
@@ -89,14 +86,12 @@ def monthly_view(month):
 
 
 # For Daily Task ---------------------------------------------------------------------------------------------------
-def daily_view():
+def daily_view(day):
     task_list = {}
-    # Get current date
-    current_date = datetime.now().strftime("%Y-%m-%d")
 
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
-        if row["Work Date"] == current_date:
+        if row["Work Date"] == day:
             # Calculate how much of the task is completed
             percentage = float(row["Time Input"]) / float(row["Completion Time"])
             task_list.update({row["Task Name"]: percentage})
@@ -117,18 +112,21 @@ def daily_view():
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Today")
     
-    output_dir = "daily_fig"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "daily_fig.png")
+    output_path = os.path.join(output_dir, "daily_fig_bar.png")
     plt.savefig(output_path)      
     return output_path
+
+
 
 # Monthly Time bar graph
 def month_time(month):
     task_list = {}
 
     for index, row in data.iterrows():
-        if row['Work Date'][0:7] == month:
+        if row["Work Date"][0:7] == str(month):
+            print("Task found: %f", row["Task Name"])
             percentage = float(row["Time Input"]) / float(row["Completion Time"])
             task_list.update({row["Task Name"]: percentage})
     
@@ -137,7 +135,7 @@ def month_time(month):
 
     fig = plt.figure(figsize=(10, 5))
 
-    plt.bar(x, y, color='green', width=0.4)
+    plt.bar(x, y, color='darkgreen', width=0.4)
     
 	# Set the x and y axis limits to start from 0
     plt.xlim(-0.5, len(x))  # Ensure the bars have space and are centered on the x-axis
@@ -148,18 +146,18 @@ def month_time(month):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Task")
 
-    output_dir = "monthly_output"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "monthly_fig.png")
+    output_path = os.path.join(output_dir, "monthly_output_fig.png")
     plt.savefig(output_path)
     return output_path
+
 
 
 # For specific tasks within a time frame and how long was spent on each task
 def date_time(start_date, end_date):
     task_list = {}
 
-    iter = int(start_date[8:9]+1)
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
         if row["Work Date"] <= end_date and row["Work Date"] >= start_date:
@@ -183,11 +181,13 @@ def date_time(start_date, end_date):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Selected Dates")
     
-    output_dir = "sel_date_fig"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "sel_date_fig.png")
     plt.savefig(output_path)      
     return output_path
+
+
 
 #Functions for if no time input but with tag specific
 #Py chart to represent information
@@ -212,7 +212,7 @@ def daily_view_py_tag(tag_id):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels) 
-    output_dir = "daily_tag_fig"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "daily_tag_fig.png")
     plt.savefig(output_path)      
@@ -237,7 +237,7 @@ def month_py_tag(month, tag_id):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels)
-    output_dir = "month_tag_fig"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "month_tag_fig.png")
     plt.savefig(output_path)
@@ -248,7 +248,6 @@ def date_py_tag(start_date, end_date, tag_id):
     completed = 0
     uncompleted = 0
     
-    iter = int(start_date[8:9]+1)
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
         if row["Work Date"] <= end_date and row["Work Date"] >= start_date:
@@ -263,7 +262,7 @@ def date_py_tag(start_date, end_date, tag_id):
     mylabels = ["Completed", "Uncompleted"]
 
     plt.pie(y, labels=mylabels)
-    output_dir = "date_tag_fig"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "date_tag_fig.png")
     plt.savefig(output_path)      
@@ -272,21 +271,17 @@ def date_py_tag(start_date, end_date, tag_id):
 
 #For tag specific items and time input
 # For Daily Task ---------------------------------------------------------------------------------------------------
-def daily_tag_bar(tag_id):
+def daily_tag_bar(day, tag_id):
     task_list = {}
-    # Get current date
-    current_date = datetime.now().strftime("%Y-%m-%d")
 
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
-        if row["Work Date"] == current_date:
+        if row["Work Date"] == day:
             if row['Tags'] == tag_id:
-                if row['Status'] == 'completed':
-                    plt.bar(row['Task Name'], 1, color='black')
-                else:
-                    percentage = float(row["Time Input"]) / float(row["Completion Time"])
-                    plt.bar(row['Task Name'], percentage, color='limegreen')
-
+                # Calculate how much of the task is completed
+                percentage = float(row["Time Input"]) / float(row["Completion Time"])
+                task_list.update({row["Task Name"]: percentage})
+    
     x = list(task_list.keys())
     y = list(task_list.values())
 
@@ -303,7 +298,7 @@ def daily_tag_bar(tag_id):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Today")
     
-    output_dir = "daily_tag_bar"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "daily_tag_bar.png")
     plt.savefig(output_path)      
@@ -313,16 +308,12 @@ def daily_tag_bar(tag_id):
 def date_tag_bar(start_date, end_date, tag_id):
     task_list = {}
 
-    iter = int(start_date[8:9]+1)
     # Determine if task is on current day for daily tasks
     for index, row in data.iterrows():
         if row["Work Date"] <= end_date and row["Work Date"] >= start_date:
             if row['Tags'] == tag_id:
-                if row['Status'] == 'completed':
-                    plt.bar(row['Task Name'], 1, color='black')
-                else:
-                    percentage = float(row["Time Input"]) / float(row["Completion Time"])
-                    plt.bar(row['Task Name'], percentage, color='limegreen')
+                percentage = float(row["Time Input"]) / float(row["Completion Time"])
+                task_list.update({row["Task Name"]: percentage})
     
     x = list(task_list.keys())
     y = list(task_list.values())
@@ -340,7 +331,7 @@ def date_tag_bar(start_date, end_date, tag_id):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Tasks for Selected Dates")
     
-    output_dir = "date_time_bar"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "date_time_bar.png")
     plt.savefig(output_path)      
@@ -353,11 +344,8 @@ def month_tag_bar(month, tag_id):
     for index, row in data.iterrows():
         if row['Work Date'][0:7] == month:
             if row['Tags'] == tag_id:
-                if row['Status'] == 'completed':
-                    plt.bar(row['Task Name'], 1, color='black')
-                else:
-                    percentage = float(row["Time Input"]) / float(row["Completion Time"])
-                    plt.bar(row['Task Name'], percentage, color='limegreen')
+                percentage = float(row["Time Input"]) / float(row["Completion Time"])
+                task_list.update({row["Task Name"]: percentage})
     
     x = list(task_list.keys())
     y = list(task_list.values())
@@ -375,7 +363,7 @@ def month_tag_bar(month, tag_id):
     plt.xlabel("Task")
     plt.ylabel("Percentage Completed of Task")
 
-    output_dir = "month_tag_bar"
+    output_dir = "vis_plots"
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "month_tag_bar.png")
     plt.savefig(output_path)
@@ -387,7 +375,7 @@ def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
     if time_input is None:
         if tag_id is None:
             if daily:
-                return daily_view_pychart()
+                return daily_view_pychart(daily)
             if start_date and end_date:
                 return specific_date(start_date, end_date)
             if month:
@@ -402,14 +390,14 @@ def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
     else:
         if tag_id is None:
             if daily:
-                return daily_view()
+                return daily_view(daily)
             if month:
-                return month_time(tag_id)
+                return month_time(month)
             if start_date and end_date:
                 return date_time(start_date, end_date)
         else:
             if daily:
-                return daily_tag_bar(tag_id)
+                return daily_tag_bar(daily, tag_id)
             if start_date and end_date:
                 return date_tag_bar(start_date, end_date, tag_id)
             if month:
@@ -418,3 +406,11 @@ def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
 
     raise ValueError("Invalid parameters: Could not create productivity plot")
     
+if __name__ == "__main__":
+    daily = None
+    start_date = "2024-10-31"
+    end_date = "2024-11-15"
+    month = None 
+    tag_id = "household"
+    time_input = None
+    create_productivity(daily, start_date, end_date, month, tag_id, time_input)
