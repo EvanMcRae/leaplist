@@ -80,6 +80,8 @@ class Task():
             self.deadline_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
             self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10, sticky = 'w')
             self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            if sys.platform == "darwin":
+                self.deadline_entry._top_cal.overrideredirect(False) # @Olivia does this help?
             self.deadline_entry.grid(column = 1, row = 1, padx = (10, 10), pady = 10, sticky = 'w')
             self.deadline_entry.delete(0, "end")
             self.deadline_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
@@ -89,6 +91,8 @@ class Task():
             self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15), justify = 'left')
             self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
             self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            if sys.platform == "darwin":
+                self.work_date_entry._top_cal.overrideredirect(False) # @Olivia does this help?
             self.work_date_entry.grid(column = 1, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
             self.work_date_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_work_date, style = 'TaskButton.TButton', cursor = 'hand2')
             self.work_date_reset_button.grid(column = 2, row = 2, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
