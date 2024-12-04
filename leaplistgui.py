@@ -336,6 +336,15 @@ class ScrollableFrame(ttk.Frame):
 
     # handle mouse wheel scrolling
     def _on_mousewheel(self, event):
+        # get widget under cursor
+        widget_under_cursor = self.canvas.winfo_containing(self.canvas.winfo_pointerx(), self.canvas.winfo_pointery())
+
+        # if mouse is over a scrollable ScrolledText widget, do not apply canvas scroll
+        if isinstance(widget_under_cursor, scrolledtext.ScrolledText):
+            yview = widget_under_cursor.yview()
+            if not (yview[0] == 0.0 and yview[1] == 1.0): # if content is not fully visible
+                return
+        
         # only able to scroll if content exceeds canvas height
         canvas_height = self.canvas.winfo_height()
         content_height = self.canvas.bbox('all')[3] # bottom of the bounding box
