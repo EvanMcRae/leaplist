@@ -431,10 +431,17 @@ class LeapList(tkinter.Tk):
         self.productivity_button.pack(padx = 15, pady = 15, anchor = 'w')
         self.productivity_button.bind('<Button-1>', self.open_productivity)
 
-        # create quit button -- TODO move this somewhere else
-        self.quit_button = tkinter.Label(self.sidebar, text = 'Quit', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
-        self.quit_button.pack(padx = 15, pady = 15, anchor = 'w')
+        # create settings button
+        self.settings_button = tkinter.Label(self.sidebar, text = 'Settings', font = ('Arial', 30), foreground = '#aaa', background = '#605d60', cursor = 'hand2', justify = 'left')
+        self.settings_button.pack(padx = 15, pady = 15, anchor = 'w')
+        self.settings_button.bind('<Button-1>', self.open_settings)
+
+        # create quit button
+        self.quit_button = tkinter.Label(self.top_bar, text = '×', font = ('Arial', 45), foreground = '#aaa', background = '#363237', cursor = 'hand2')
+        self.quit_button.place(x = 1210, y = 10)
         self.quit_button.bind('<Button-1>', self.quit)
+        self.quit_button.bind('<Enter>', lambda event: change_color(self.quit_button, "white"))
+        self.quit_button.bind('<Leave>', lambda event: change_color(self.quit_button, "#aaa"))
 
         #### CONTENT | code for frames ####  
         # create footer frame (non-scrollable area)
@@ -479,7 +486,7 @@ class LeapList(tkinter.Tk):
         self.time_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         self.time_dropdown.set("None")
 
-        #producitivy dropdown for task tags
+        #productivity dropdown for task tags
         self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag (Optional)', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         tags = ["None", "All Tags"] + llcsv.get_all_tags()
@@ -499,7 +506,12 @@ class LeapList(tkinter.Tk):
         #Get the user selections
         self.time_dropdown.bind("<<ComboboxSelected>>", self.get_time_dropdown_selection)
 
-        # today add task button
+        # settings frame
+        self.settings = ScrollableFrame(self)
+        self.settings_label = tkinter.Label(self.settings.scrollable_frame, text = 'Settings', foreground = '#fff', bg = '#8e9294', font = ('Arial', 30))
+        self.settings_label.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+
+        # add task buttons
         self.today.add_task_button = tkinter.Label(self.today.scrollable_frame, text = '+', font = ('Arial', 30), foreground = '#fff', background = '#8e9294', cursor = 'hand2')
         self.today.add_task_button.place(x = 978, y = 20)
         self.today.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.today.add_task_button, False))
@@ -514,22 +526,10 @@ class LeapList(tkinter.Tk):
 
         def change_color(widget, fg_color):
             widget.config(fg = fg_color)
-        
-        # self.add_task_button.grid(column = 0, row = 0, padx = (20, 10), pady = 10)
-
-        # # completed task -- TODO repurpose
-        #     # you need a frame
-        # self.remove_task_frame = tkinter.Frame(self.footer, bg = '#363237')
-        # self.remove_task_frame.pack()
-        #     # a button
-        # self.remove_task_button = ttk.Button(self.remove_task_frame, text = 'Remove Task', command = self.remove_task, style = 'Remove.TButton', state = 'disabled', cursor = 'arrow', width = 20)
-        # self.remove_task_button.grid(column = 4, row = 0, padx = (0, 10), pady = 10)
 
         self.q_today()
         self.q_upcoming()
         self.q_complete()
-
-        self.task = Task()
 
     #This probably needs some work to make sure it's communicating with the plot func correctly
     #I think the custom date range is broken
@@ -650,6 +650,11 @@ class LeapList(tkinter.Tk):
     def open_productivity(self, event):
         if self.current_frame != self.productivity:
             self.open_frame(self.productivity, self.productivity_button)
+
+    #opens productivity frame
+    def open_settings(self, event):
+        if self.current_frame != self.settings:
+            self.open_frame(self.settings, self.settings_button)
 
     #general function for opening any frame
     def open_frame(self, frame, button):
