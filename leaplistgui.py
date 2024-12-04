@@ -450,14 +450,14 @@ class LeapList(tkinter.Tk):
         # productivity dropdown for time range
         self.productivity_dropdown_time_range = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Time Range', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_time_range.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-        self.time_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = ['Today', 'This Month', 'Custom'], state = 'readonly')
+        self.time_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = ['None', 'Today', 'This Month', 'Custom'], state = 'readonly')
         self.time_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-        self.time_dropdown.set("Today")
+        self.time_dropdown.set("None")
 
         #producitivy dropdown for task tags
         self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag (Optional)', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-        tags = ["None"] + llcsv.get_all_tags()
+        tags = ["None", "All Tags"] + llcsv.get_all_tags()
         self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = tags, state = 'readonly')
         self.tags_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         self.tags_dropdown.set("None")
@@ -542,6 +542,8 @@ class LeapList(tkinter.Tk):
         tag_id = None if self.tags_dropdown.get() == "None" else self.tags_dropdown.get()
         time_input = self.productivity_checkbox_var.get()
 
+        #print the selections
+        print("Time Input: ", time_input, "Tag ID: ", tag_id, "Start Date: ", self.start_date, "End Date: ", self.end_date, "Month: ", self.month, "Daily: ", self.daily)
         #saving the returned PNG here, although this might not be the way to do it properly
         productivity_PNG = pCSV.create_productivity(daily=self.daily, start_date=self.start_date,
                                                     end_date=self.end_date, month=self.month, tag_id=tag_id,
