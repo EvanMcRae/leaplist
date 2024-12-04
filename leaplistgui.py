@@ -219,7 +219,6 @@ class Task():
         
         # self.deadline = ""
         self.deadline = self.deadline_entry.get_date()
-        print(self.deadline_entry.get_date())
         self.work_date = self.work_date_entry.get_date()
 
         #retrieve text from user entry
@@ -285,8 +284,6 @@ class Task():
     def remove_task(self):
         if self.task_id != 0:
             llcsv.remove_task(self.task_id)
-            print('task removed')
-            # TODO: delete it from owning list in leaplist app
         self.frame.pack_forget()
 
     def edit_task(self, event):
