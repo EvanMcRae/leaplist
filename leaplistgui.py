@@ -60,8 +60,6 @@ class Task():
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
 
-
-
             self.work_date = datetime.now().strftime('%Y-%m-%d')
             self.deadline = None
 
@@ -122,7 +120,6 @@ class Task():
             self.save_button.grid(column = 0, row = 4, padx = (10, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             self.cancel_button = ttk.Button(self.add_task_frame.left, text = 'Cancel', command = self.cancel_edit, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
-            self.cancel_button.grid(column = 1, row = 4, padx = (30, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             self.remove_button = ttk.Button(self.add_task_frame.left, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
             self.remove_button.grid(column = 2, row = 4, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
@@ -183,8 +180,13 @@ class Task():
                     self.check.config(state = 'active')
                     self.check.select()
                 
+                # Only do this if the task was saved in the first place
+                self.cancel_button.grid(column = 1, row = 4, padx = (30, 0), ipadx = 10, pady = 10, sticky = 'w')
+
                 self.view_task_frame.pack(fill = 'both', expand = True)
             else:
+                self.remove_button.config(text = 'Cancel')
+
                 self.add_task_frame.pack(expand = True, fill = 'both')
     
     #functions for entering data
