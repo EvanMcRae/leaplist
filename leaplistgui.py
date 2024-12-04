@@ -564,22 +564,23 @@ class LeapList(tkinter.Tk):
     #it creates a calendar popup for the user to set the start and end date
     #you have to bring up calendar, hit set start date, then bring up calendar again and set end date
     def calendar_for_productivity(self):
-        def set_start_date():
-            self.start_date = self.calendar.get_date()
-            print(self.start_date)
-            self.calendar_popup.destroy()
-
-        def set_end_date():
-            self.end_date = self.calendar.get_date()
-            print(self.end_date)
+        def set_dates():
+            self.start_date = start_date.get_date()
+            self.end_date = end_date.get_date()
             self.calendar_popup.destroy()
 
         self.calendar_popup = tkinter.Toplevel()
-        self.calendar = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd', showweeknumbers=False)
-        self.calendar.pack()
+        self.calendar_popup.title("Select Start and End Date")
 
-        ttk.Button(self.calendar_popup, text='Set Start Date', command=set_start_date).pack()
-        ttk.Button(self.calendar_popup, text='Set End Date', command=set_end_date).pack()
+        tkinter.Label(self.calendar_popup, text = "Select Start Date:", font=('Arial', 12)).pack()
+        start_date = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd',
+                                  showweeknumbers=False)
+        start_date.pack()
+
+        tkinter.Label(self.calendar_popup, text="Select End Date", font=("Arial", 12)).pack()
+        end_date = Calendar(self.calendar_popup, selectmode='day', date_pattern='yyyy-mm-dd', showweeknumbers=False)
+        end_date.pack()
+        ttk.Button(self.calendar_popup, text="Set Dates", command=set_dates).pack()
 
     #This function is called when the user clicks the create visualization button
     #it gathers all the drop down / check box selections to send to the plot creator
@@ -605,7 +606,7 @@ class LeapList(tkinter.Tk):
         p_image = Image.open(productivity_PNG)
         photo = ImageTk.PhotoImage(p_image)
         #probably change the geometry to be bigger?
-        popup.geometry("800x800")
+        popup.geometry("1000x1000")
         popup.resizable(False, False)
 
         label = tkinter.Label(popup, image=photo)
