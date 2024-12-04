@@ -8,7 +8,8 @@ import sys
 import leaplistcsv as llcsv
 import plotCSV as pCSV
 import math
-from datetime import datetime
+import datetime as dt
+from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
 
 if sys.platform == "win32":
@@ -16,11 +17,6 @@ if sys.platform == "win32":
 elif sys.platform == "darwin":
     # TODO add different playsound package here for macos
     pass
-
-# fixes some ugly blurring on windows
-# if sys.platform == "win32":
-#     from ctypes import windll
-#     windll.shcore.SetProcessDpiAwareness(1)
 
 # SOURCE: https://stackoverflow.com/questions/72102048/is-there-a-way-to-have-the-date-entry-calendar-show-up-in-a-blank-date-entry-fie
 class CustomDateEntry(DateEntry):
@@ -40,7 +36,7 @@ class CustomDateEntry(DateEntry):
         return self.old_parse_date(text) # runs original function
 
 class Task():
-    def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None):
+    def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None, new_upcoming=False):
         super().__init__()
 
         # to clean up gui bugs :) 
@@ -60,7 +56,10 @@ class Task():
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
 
-            self.work_date = datetime.now().strftime('%Y-%m-%d')
+            if not new_upcoming:
+                self.work_date = datetime.now().strftime('%Y-%m-%d')
+            else:
+                self.work_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
             self.deadline = None
 
             self.description = ""
@@ -100,14 +99,16 @@ class Task():
             if sys.platform == "darwin":
                 self.work_date_entry._top_cal.overrideredirect(False) # @Olivia does this help?
             self.work_date_entry.grid(column = 1, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
+            if new_upcoming:
+                self.work_date_entry.set_date(datetime.now() + timedelta(days=1))
+
             self.work_date_reset_button = ttk.Button(self.add_task_frame.left, text = 'Reset', command = self.reset_work_date, style = 'TaskButton.TButton', cursor = 'hand2')
             self.work_date_reset_button.grid(column = 2, row = 2, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             # description input
-            # TODO make multiline
             self.description_label = tkinter.Label(self.add_task_frame.right, fg = '#fff', bg = '#605d60', text = 'Description: ', font = ('Arial', 15), justify = 'left')
             self.description_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10, sticky = 'w')
-            self.description_entry = scrolledtext.ScrolledText(self.add_task_frame.right, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 47, height = 8)
+            self.description_entry = scrolledtext.ScrolledText(self.add_task_frame.right, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 46, height = 8)
             self.description_entry.grid(column = 0, row = 1, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
 
             # tags input
@@ -306,6 +307,7 @@ class ScrollableFrame(ttk.Frame):
 
         # create scrollbar
         self.scrollbar = ttk.Scrollbar(self, orient = 'vertical', command = self.canvas.yview)
+        self.scrollbar.pack(side = 'right', fill = 'y')
 
         # attach scrollbar to canvas
         self.canvas.configure(yscrollcommand = self.scrollbar.set)
@@ -347,14 +349,14 @@ class ScrollableFrame(ttk.Frame):
     # update scroll region of canvas when frame size changes
     def _update_scrollregion(self, event):
         self.canvas.configure(scrollregion=self.canvas.bbox('all'))
-        self.toggle_scrollbar()
+        # self.toggle_scrollbar()
 
     # resize the scrollable frame to match the canvas width
     def _resize_scrollable_frame(self, event):
         canvas_width = event.width
         self.canvas.itemconfig(self.canvas_frame, width = canvas_width)
         
-    # toggle visibility of scrollbar based on content height
+    # toggle visibility of scrollbar based on content height -- UNUSED
     def toggle_scrollbar(self):
         # get height of canvas and content in frame
         canvas_height = self.canvas.winfo_height()
@@ -438,12 +440,14 @@ class LeapList(tkinter.Tk):
         # create footer frame (non-scrollable area)
         self.footer = tkinter.Frame(self, background = '#363237')
         self.footer.pack(side = 'bottom', fill = 'x')
+        self.footer.inner = tkinter.Frame(self.footer, background='#363237')
+        self.footer.inner.pack(expand=True) 
 
         #Progress bar child to footer - DAB
-        self.footer.progress_label = tkinter.Label(self.footer, text = 'Progress:', foreground = '#fff', bg = '#363237', font = ('Arial', 12))
-        self.footer.progress_label.grid(column = 1, row = 0, padx = 10, pady = 10)
-        self.footer.progress = ttk.Progressbar(self.footer, orient = 'horizontal', length = 300, mode = 'determinate')
-        self.footer.progress.grid(column = 2, row = 0, padx = 4, pady = 10)
+        self.footer.progress_label = tkinter.Label(self.footer.inner, text = 'Today\'s Progress:', foreground = '#fff', bg = '#363237', font = ('Arial', 12))
+        self.footer.progress_label.pack(side = 'left', padx = (0, 10), pady = 10)
+        self.footer.progress = ttk.Progressbar(self.footer.inner, orient = 'horizontal', length = 500, mode = 'determinate')
+        self.footer.progress.pack(side = 'left', pady = 10)
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
         
         # today frame
@@ -495,9 +499,23 @@ class LeapList(tkinter.Tk):
         #Get the user selections
         self.time_dropdown.bind("<<ComboboxSelected>>", self.get_time_dropdown_selection)
 
-        # add task button
-        self.add_task_button = ttk.Button(self.footer, text = 'Add Task', command = self.add_task, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.add_task_button.grid(column = 0, row = 0, padx = 10, pady = 10)
+        # today add task button
+        self.today.add_task_button = tkinter.Label(self.today.scrollable_frame, text = '+', font = ('Arial', 30), foreground = '#fff', background = '#8e9294', cursor = 'hand2')
+        self.today.add_task_button.place(x = 978, y = 20)
+        self.today.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.today.add_task_button))
+        self.today.add_task_button.bind('<Enter>', lambda event: change_color(self.today.add_task_button, "lightgreen"))
+        self.today.add_task_button.bind('<Leave>', lambda event: change_color(self.today.add_task_button, "white"))
+
+        self.upcoming.add_task_button = tkinter.Label(self.upcoming.scrollable_frame, text = '+', font = ('Arial', 30), foreground = '#fff', background = '#8e9294', cursor = 'hand2')
+        self.upcoming.add_task_button.place(x = 978, y = 20)
+        self.upcoming.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.upcoming.add_task_button))
+        self.upcoming.add_task_button.bind('<Enter>', lambda event: change_color(self.upcoming.add_task_button, "lightgreen"))
+        self.upcoming.add_task_button.bind('<Leave>', lambda event: change_color(self.upcoming.add_task_button, "white"))
+
+        def change_color(widget, fg_color):
+            widget.config(fg = fg_color)
+        
+        # self.add_task_button.grid(column = 0, row = 0, padx = (20, 10), pady = 10)
 
         # # completed task -- TODO repurpose
         #     # you need a frame
@@ -653,9 +671,11 @@ class LeapList(tkinter.Tk):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
     #adds task
-    def add_task(self):
-        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh)
+    def add_task(self, widget):
+        widget.config(fg = 'green')
+        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh, True)
         self.current_frame.bind_events()
+        widget.config(fg = 'lightgreen')
         
     #progress bar function
     def progress_bar(self):
