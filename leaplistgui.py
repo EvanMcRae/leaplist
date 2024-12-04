@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import scrolledtext
 from PIL import ImageTk, Image
 import os
 import sys
@@ -59,13 +60,7 @@ class Task():
             # add task frame
             self.add_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
 
-            # task name input
-            self.task_name_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Name: ', font = ('Arial', 15), justify = 'left')
-            self.task_name_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10, sticky = 'w')
-            self.task_name_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
-            self.task_name_entry.grid(column = 1, row = 0, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
-            self.task_name_entry.focus_set()
-            self.task_name_entry.bind("<KeyRelease>", self.on_type)
+
 
             self.work_date = datetime.now().strftime('%Y-%m-%d')
             self.deadline = None
@@ -76,45 +71,61 @@ class Task():
 
             self.refresh = refresh
 
+            self.add_task_frame.left = tkinter.Frame(self.add_task_frame, bg = '#605d60')
+            self.add_task_frame.left.grid(column = 0, row = 0, sticky = 'w')
+            self.add_task_frame.right = tkinter.Frame(self.add_task_frame, bg = '#605d60')
+            self.add_task_frame.right.grid(column = 1, row = 0, sticky = 'w')
+
+            # task name input
+            self.task_name_label = tkinter.Label(self.add_task_frame.left, fg = '#fff', bg = '#605d60', text = 'Name: ', font = ('Arial', 15), justify = 'left')
+            self.task_name_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10, sticky = 'w')
+            self.task_name_entry = tkinter.Entry(self.add_task_frame.left, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
+            self.task_name_entry.grid(column = 1, row = 0, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
+            self.task_name_entry.focus_set()
+            self.task_name_entry.bind("<KeyRelease>", self.on_type)
+
             # add deadline entry
-            self.deadline_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
+            self.deadline_label = tkinter.Label(self.add_task_frame.left, fg = '#fff', bg = '#605d60', text = 'Deadline: ', font = ('Arial', 15), justify = 'left')
             self.deadline_label.grid(column = 0, row = 1 , padx = (10, 10), pady = 10, sticky = 'w')
-            self.deadline_entry = CustomDateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            self.deadline_entry = CustomDateEntry(self.add_task_frame.left, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
             if sys.platform == "darwin":
                 self.deadline_entry._top_cal.overrideredirect(False) # @Olivia does this help?
             self.deadline_entry.grid(column = 1, row = 1, padx = (10, 10), pady = 10, sticky = 'w')
             self.deadline_entry.delete(0, "end")
-            self.deadline_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
+            self.deadline_reset_button = ttk.Button(self.add_task_frame.left, text = 'Reset', command = self.reset_deadline, style = 'TaskButton.TButton', cursor = 'hand2')
             self.deadline_reset_button.grid(column = 2, row = 1, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             # add work date entry
-            self.work_date_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15), justify = 'left')
+            self.work_date_label = tkinter.Label(self.add_task_frame.left, fg = '#fff', bg = '#605d60', text = 'Work Date: ', font = ('Arial', 15), justify = 'left')
             self.work_date_label.grid(column = 0, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
-            self.work_date_entry = DateEntry(self.add_task_frame, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
+            self.work_date_entry = DateEntry(self.add_task_frame.left, selectmode='day', mindate=datetime.now(), font = ('Arial', 15), showweeknumbers=False, justify = 'left')
             if sys.platform == "darwin":
                 self.work_date_entry._top_cal.overrideredirect(False) # @Olivia does this help?
             self.work_date_entry.grid(column = 1, row = 2, padx = (10, 10), pady = 10, sticky = 'w')
-            self.work_date_reset_button = ttk.Button(self.add_task_frame, text = 'Reset', command = self.reset_work_date, style = 'TaskButton.TButton', cursor = 'hand2')
+            self.work_date_reset_button = ttk.Button(self.add_task_frame.left, text = 'Reset', command = self.reset_work_date, style = 'TaskButton.TButton', cursor = 'hand2')
             self.work_date_reset_button.grid(column = 2, row = 2, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             # description input
             # TODO make multiline
-            self.description_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Description: ', font = ('Arial', 15), justify = 'left')
-            self.description_label.grid(column = 0, row = 3, padx = (10, 10), pady = 10, sticky = 'w')
-            self.description_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
-            self.description_entry.grid(column = 1, row = 3, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
+            self.description_label = tkinter.Label(self.add_task_frame.right, fg = '#fff', bg = '#605d60', text = 'Description: ', font = ('Arial', 15), justify = 'left')
+            self.description_label.grid(column = 0, row = 0, padx = (10, 10), pady = 10, sticky = 'w')
+            self.description_entry = scrolledtext.ScrolledText(self.add_task_frame.right, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 47, height = 8)
+            self.description_entry.grid(column = 0, row = 1, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
 
             # tags input
-            self.tags_label = tkinter.Label(self.add_task_frame, fg = '#fff', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
-            self.tags_label.grid(column = 0, row = 4, padx = (10, 10), pady = 10, sticky = 'w')
-            self.tags_entry = tkinter.Entry(self.add_task_frame, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
-            self.tags_entry.grid(column = 1, row = 4, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
+            self.tags_label = tkinter.Label(self.add_task_frame.left, fg = '#fff', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
+            self.tags_label.grid(column = 0, row = 3, padx = (10, 10), pady = 10, sticky = 'w')
+            self.tags_entry = tkinter.Entry(self.add_task_frame.left, bg = '#fff', fg = '#000', font = ('Arial', 15), width = 25, justify = 'left')
+            self.tags_entry.grid(column = 1, row = 3, padx = (10, 10), pady = 10, sticky = 'w', columnspan = 2)
 
-            self.save_button = ttk.Button(self.add_task_frame, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
-            self.save_button.grid(column = 0, row = 5, padx = (0, 10), pady = 10)
+            self.save_button = ttk.Button(self.add_task_frame.left, text = 'Save', command = self.save_task, style = 'TaskButton.TButton', cursor = 'arrow', state = 'disabled')
+            self.save_button.grid(column = 0, row = 4, padx = (10, 0), ipadx = 10, pady = 10, sticky = 'w')
 
-            self.remove_button = ttk.Button(self.add_task_frame, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
-            self.remove_button.grid(column = 1, row = 5, padx = (0, 10), pady = 10)
+            self.cancel_button = ttk.Button(self.add_task_frame.left, text = 'Cancel', command = self.cancel_edit, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
+            self.cancel_button.grid(column = 1, row = 4, padx = (30, 0), ipadx = 10, pady = 10, sticky = 'w')
+
+            self.remove_button = ttk.Button(self.add_task_frame.left, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
+            self.remove_button.grid(column = 2, row = 4, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             
@@ -164,7 +175,7 @@ class Task():
                 except TypeError:
                     pass
                 finally:
-                    self.description_entry.insert(0, self.description)
+                    self.description_entry.insert('1.0', self.description)
                     
                 self.priority = llcsv.get_priority(task_id) # TODO
 
@@ -191,11 +202,15 @@ class Task():
     def reset_deadline(self):
         self.deadline_entry.delete(0, "end")
 
+    def cancel_edit(self):
+        self.editing = False
+        self.refresh(self)
+
     #brings up a box to add a task and notes if wanted
     def save_task(self):
         self.editing = False
 
-        self.description = self.description_entry.get()
+        self.description = self.description_entry.get('1.0', tkinter.END)
         self.priority = "" # TODO
         self.tags = self.tags_entry.get()
         
