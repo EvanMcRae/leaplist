@@ -138,58 +138,61 @@ class Task():
 
             if task_id != None:
                 self.task_id = task_id
-
-                task_name = llcsv.get_task_name(task_id)
-                self.label.config(text = task_name)
-                self.task_name_entry.insert(0, task_name)
-                if len(str(task_name)) > 0:
-                    self.save_button.config(state = 'normal')
-                    self.save_button.config(cursor = 'hand2')
-                
-                self.deadline = llcsv.get_deadline(task_id)
-                try:
-                    self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
-                except TypeError:
-                    self.deadline_entry.delete(0, "end")
-                except ValueError:
-                    self.deadline_entry.delete(0, "end")
-
-                self.work_date = llcsv.get_work_date(task_id)
-                self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
-                
-                self.tags = llcsv.get_tags(task_id)
-                try:
-                    if math.isnan(self.tags):
-                        self.tags = ""
-                except TypeError:
-                    pass
-                finally:
-                    self.tags_entry.insert(0, self.tags)
-
-                self.description = llcsv.get_description(task_id)
-                try:
-                    if math.isnan(self.description):
-                        self.description = ""
-                except TypeError:
-                    pass
-                finally:
-                    self.description_entry.insert('1.0', self.description)
-                    
-                self.priority = llcsv.get_priority(task_id) # TODO
-
-                if llcsv.is_completed(task_id):
-                    self.check.config(state = 'normal')
-                    self.check.select()
-                
                 # Only do this if the task was saved in the first place
                 self.cancel_button.grid(column = 1, row = 4, padx = (30, 0), ipadx = 10, pady = 10, sticky = 'w')
-
-                self.view_task_frame.pack(fill = 'both', expand = True)
+                self.repopulate_data()
             else:
                 self.remove_button.config(text = 'Cancel')
-
                 self.add_task_frame.pack(expand = True, fill = 'both')
     
+    def repopulate_data(self):
+        task_name = llcsv.get_task_name(self.task_id)
+        self.label.config(text = task_name)
+        self.task_name_entry.delete(0, "end")
+        self.task_name_entry.insert(0, task_name)
+        if len(str(task_name)) > 0:
+            self.save_button.config(state = 'normal')
+            self.save_button.config(cursor = 'hand2')
+        
+        self.deadline = llcsv.get_deadline(self.task_id)
+        try:
+            self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
+        except TypeError:
+            self.deadline_entry.delete(0, "end")
+        except ValueError:
+            self.deadline_entry.delete(0, "end")
+
+        self.work_date = llcsv.get_work_date(self.task_id)
+        self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
+        
+        self.tags = llcsv.get_tags(self.task_id)
+        try:
+            if math.isnan(self.tags):
+                self.tags = ""
+        except TypeError:
+            pass
+        finally:
+            self.tags_entry.delete(0, 'end')
+            self.tags_entry.insert(0, self.tags)
+
+        self.description = llcsv.get_description(self.task_id)
+        try:
+            if math.isnan(self.description):
+                self.description = ""
+        except TypeError:
+            pass
+        finally:
+            self.description_entry.delete('1.0', 'end')
+            self.description_entry.insert('1.0', self.description)
+            
+        self.priority = llcsv.get_priority(self.task_id) # TODO
+
+        if llcsv.is_completed(self.task_id):
+            self.check.config(state = 'normal')
+            self.check.select()
+
+        self.view_task_frame.pack(fill = 'both', expand = True)
+
     #functions for entering data
     def on_type(self, event):
         if len(self.task_name_entry.get()) > 0:
@@ -207,7 +210,8 @@ class Task():
 
     def cancel_edit(self):
         self.editing = False
-        self.refresh(self)
+        self.add_task_frame.pack_forget()
+        self.repopulate_data()
 
     #brings up a box to add a task and notes if wanted
     def save_task(self):
@@ -334,7 +338,10 @@ class ScrollableFrame(ttk.Frame):
     # handle mouse wheel scrolling
     def _on_mousewheel(self, event):
         # get widget under cursor
-        widget_under_cursor = self.canvas.winfo_containing(self.canvas.winfo_pointerx(), self.canvas.winfo_pointery())
+        try:
+            widget_under_cursor = self.canvas.winfo_containing(self.canvas.winfo_pointerx(), self.canvas.winfo_pointery())
+        except KeyError:
+            return
 
         # if mouse is over a scrollable ScrolledText widget, do not apply canvas scroll
         if isinstance(widget_under_cursor, scrolledtext.ScrolledText):
