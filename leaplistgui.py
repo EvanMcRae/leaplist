@@ -178,7 +178,7 @@ class Task():
                 self.priority = llcsv.get_priority(task_id) # TODO
 
                 if llcsv.is_completed(task_id):
-                    self.check.config(state = 'active')
+                    self.check.config(state = 'normal')
                     self.check.select()
                 
                 # Only do this if the task was saved in the first place
@@ -502,13 +502,13 @@ class LeapList(tkinter.Tk):
         # today add task button
         self.today.add_task_button = tkinter.Label(self.today.scrollable_frame, text = '+', font = ('Arial', 30), foreground = '#fff', background = '#8e9294', cursor = 'hand2')
         self.today.add_task_button.place(x = 978, y = 20)
-        self.today.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.today.add_task_button))
+        self.today.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.today.add_task_button, False))
         self.today.add_task_button.bind('<Enter>', lambda event: change_color(self.today.add_task_button, "lightgreen"))
         self.today.add_task_button.bind('<Leave>', lambda event: change_color(self.today.add_task_button, "white"))
 
         self.upcoming.add_task_button = tkinter.Label(self.upcoming.scrollable_frame, text = '+', font = ('Arial', 30), foreground = '#fff', background = '#8e9294', cursor = 'hand2')
         self.upcoming.add_task_button.place(x = 978, y = 20)
-        self.upcoming.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.upcoming.add_task_button))
+        self.upcoming.add_task_button.bind('<Button-1>', lambda event: self.add_task(self.upcoming.add_task_button, True))
         self.upcoming.add_task_button.bind('<Enter>', lambda event: change_color(self.upcoming.add_task_button, "lightgreen"))
         self.upcoming.add_task_button.bind('<Leave>', lambda event: change_color(self.upcoming.add_task_button, "white"))
 
@@ -671,9 +671,9 @@ class LeapList(tkinter.Tk):
         self.footer.progress['value'] = (llcsv.getProgessPerc()) * 100
 
     #adds task
-    def add_task(self, widget):
+    def add_task(self, widget, upcoming):
         widget.config(fg = 'green')
-        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh, True)
+        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh, upcoming)
         self.current_frame.bind_events()
         widget.config(fg = 'lightgreen')
         
