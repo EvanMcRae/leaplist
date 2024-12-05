@@ -125,17 +125,22 @@ class Task():
             self.remove_button = ttk.Button(self.add_task_frame.left, text = 'Remove', command = self.remove_task, style = 'TaskButton.TButton', cursor = 'hand2', state = 'enabled')
             self.remove_button.grid(column = 2, row = 4, padx = (5, 0), ipadx = 10, pady = 10, sticky = 'w')
 
+            #### VIEW TASK FRAME
             self.view_task_frame = tkinter.Frame(self.frame, bg = '#605d60')
             
             # Creating a check mark widget. When clicked, it will mark task as completed - DAB
             self.check = tkinter.Checkbutton(self.view_task_frame, onvalue = 1, offvalue = 0, variable = self.completed, command = self.complete_task, bg = '#605d60', activebackground = '#605d60')
-            self.check.pack(side = 'left')
+            self.check.grid(column = 0, row = 0, padx = (10, 0))
 
             self.label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
-            self.label.pack(fill = 'both', side = 'left', anchor = 'w', ipadx = 15)
+            self.label.grid(column = 1, row = 0, ipadx = 15, sticky = 'w')
             self.view_task_frame.bind('<Double-Button-1>', self.edit_task)
             self.label.bind('<Double-Button-1>', self.edit_task)
 
+            self.view_task_frame.tag = tkinter.Label(self.view_task_frame, fg = '#ccc', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
+            self.view_task_frame.tag.grid(column = 1, row = 1, ipadx = 15, sticky = 'w')
+
+            #### Upon task refresh from CSV
             if task_id != None:
                 self.task_id = task_id
                 # Only do this if the task was saved in the first place
@@ -166,6 +171,7 @@ class Task():
         self.work_date_entry.set_date(datetime.strptime(self.work_date, '%Y-%m-%d'))
         
         self.tags = llcsv.get_tags(self.task_id)
+        self.view_task_frame.tag.config(text = "Untagged")
         try:
             if math.isnan(self.tags):
                 self.tags = ""
@@ -174,6 +180,8 @@ class Task():
         finally:
             self.tags_entry.delete(0, 'end')
             self.tags_entry.insert(0, self.tags)
+            if len(self.tags) > 0:
+                self.view_task_frame.tag.config(text = "Tag: " + self.tags)
 
         self.description = llcsv.get_description(self.task_id)
         try:
