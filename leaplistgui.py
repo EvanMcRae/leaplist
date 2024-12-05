@@ -282,6 +282,7 @@ class Task():
             self.check.config(state = 'disabled')
 
             popup = tkinter.Toplevel()
+            popup.protocol("WM_DELETE_WINDOW", confirm_completion)
             tkinter.Label(popup, text = 'How long did it take to complete this task?').pack()
 
             #spinbox for hours set up
