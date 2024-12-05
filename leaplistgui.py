@@ -426,6 +426,7 @@ class LeapList(tkinter.Tk):
         # self.style.configure('Sidebar.TLabel', foreground = '#aaa', background = '#605d60')
         self.style.configure('Selected.TLabel', foreground = '#fff', background = '#605d60')
         self.style.configure('AddButton.TButton', padding = (5, 5, 5, 5), background = '#363237')
+        self.style.configure('MainPage.TButton', padding = (5, 5, 5, 5), background = '#8e9294')
         self.style.configure('TaskButton.TButton', padding = (5, 5, 5, 5), background = '#605d60')
 
         #### TOPBAR ####
@@ -522,7 +523,7 @@ class LeapList(tkinter.Tk):
         self.productivity_dropdown_time_range = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Time Range', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_time_range.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         self.time_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = ['None', 'Today', 'This Month', 'Custom'], state = 'readonly')
-        self.time_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.time_dropdown.pack(padx = (15, 0), ipadx = 15, ipady = 15, anchor = 'nw')
         self.time_dropdown.set("None")
 
         #productivity dropdown for task tags
@@ -530,17 +531,21 @@ class LeapList(tkinter.Tk):
         self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
         tags = ["None", "All Tags"] + llcsv.get_all_tags()
         self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = tags, state = 'readonly')
-        self.tags_dropdown.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.tags_dropdown.pack(padx = (15, 0), ipadx = 15, ipady = 15, anchor = 'nw')
         self.tags_dropdown.set("None")
 
         #productivity checkbox for time to complete tasks
-        self.productivity_checkbox_var = tkinter.BooleanVar(value=False)
-        self.productivity_checkbox = tkinter.Checkbutton(self.productivity.scrollable_frame, text = 'Include Time to Complete Tasks in Productivity Visualization? (Optional)', variable= self.productivity_checkbox_var, font = ('Arial', 15), foreground = '#fff', bg = '#8e9294', cursor = 'hand2')
-        self.productivity_checkbox.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.productivity_checkbox_frame = tkinter.Frame(self.productivity.scrollable_frame, bg = '#8e9294')
+        self.productivity_checkbox_frame.pack(fill = 'x', expand = True)
+        self.productivity_checkbox_var = tkinter.BooleanVar()
+        self.productivity_checkbox = tkinter.Checkbutton(self.productivity_checkbox_frame, variable= self.productivity_checkbox_var, onvalue = 1, offvalue = 0, font = ('Arial', 15), bg = '#8e9294', activebackground = '#8e9294')
+        self.productivity_checkbox_label = tkinter.Label(self.productivity_checkbox_frame, text = 'Include Time to Complete Tasks in Productivity Visualization? (Optional)', font = ('Arial', 15), fg = '#fff', bg = '#8e9294', justify = 'left')
+        self.productivity_checkbox.pack(side = 'left', padx = (15, 0), ipady = 15, anchor = 'nw')
+        self.productivity_checkbox_label.pack(ipady = 15, side = 'left', anchor = 'nw')
 
         #Create Visualization Button
-        self.create_visualization_button = ttk.Button(self.productivity.scrollable_frame, text = 'Create Visualization', command = self.productivity_visualization, style = 'AddButton.TButton', cursor = 'hand2', width = 20)
-        self.create_visualization_button.pack(ipadx = 15, ipady = 15, anchor = 'nw')
+        self.create_visualization_button = ttk.Button(self.productivity.scrollable_frame, text = 'Create Visualization', command = self.productivity_visualization, style = 'MainPage.TButton', cursor = 'hand2', width = 20)
+        self.create_visualization_button.pack(padx = (15, 0), ipadx = 15, ipady = 15, anchor = 'nw')
 
         #Get the user selections
         self.time_dropdown.bind("<<ComboboxSelected>>", self.get_time_dropdown_selection)
