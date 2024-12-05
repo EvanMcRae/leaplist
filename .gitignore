@@ -163,3 +163,5 @@ cython_debug/
 LeapList.csv
 
 vis_plots/*
+
+leaplistgui-exec/*
