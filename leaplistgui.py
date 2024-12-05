@@ -37,7 +37,7 @@ class CustomDateEntry(DateEntry):
         return self.old_parse_date(text) # runs original function
 
 class Task():
-    def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None, new_upcoming=False):
+    def __init__(self, parent_frame=None, progress_bar=None, task_id=None, refresh=None, get_tags=None, new_upcoming=False):
         super().__init__()
 
         # to clean up gui bugs :) 
@@ -68,6 +68,7 @@ class Task():
             self.priority = ""
 
             self.refresh = refresh
+            self.get_tags = get_tags
 
             self.add_task_frame.left = tkinter.Frame(self.add_task_frame, bg = '#605d60')
             self.add_task_frame.left.grid(column = 0, row = 0, sticky = 'w')
@@ -261,6 +262,7 @@ class Task():
             llcsv.edit_task(self.task_id, task, self.description, self.work_date, self.deadline, self.priority, self.tags)
         
         self.refresh(self)
+        self.get_tags()
     
     #complete_task function
     def complete_task(self):
@@ -314,6 +316,7 @@ class Task():
         if self.task_id != 0:
             llcsv.remove_task(self.task_id)
         self.frame.pack_forget()
+        self.get_tags()
 
     def edit_task(self, event):
         if not llcsv.is_completed(self.task_id):
@@ -529,8 +532,8 @@ class LeapList(tkinter.Tk):
         #productivity dropdown for task tags
         self.productivity_dropdown_tags = tkinter.Label(self.productivity.scrollable_frame, text = 'Select Tag (Optional)', foreground = '#fff', bg = '#8e9294', font = ('Arial', 15))
         self.productivity_dropdown_tags.pack(ipadx = 15, ipady = 15, anchor = 'nw')
-        tags = ["None", "All Tags"] + llcsv.get_all_tags()
-        self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, values = tags, state = 'readonly')
+        self.tags_dropdown = ttk.Combobox(self.productivity.scrollable_frame, state = 'readonly')
+        self.get_tags()
         self.tags_dropdown.pack(padx = (15, 0), ipadx = 15, ipady = 15, anchor = 'nw')
         self.tags_dropdown.set("None")
 
@@ -575,6 +578,10 @@ class LeapList(tkinter.Tk):
         self.q_upcoming()
         self.q_complete()
 
+    def get_tags(self):
+        tags = ["None", "All Tags"] + llcsv.get_all_tags()
+        self.tags_dropdown.config(values = tags)
+    
     #This probably needs some work to make sure it's communicating with the plot func correctly
     #I think the custom date range is broken
     def get_time_dropdown_selection(self, event):
@@ -658,17 +665,17 @@ class LeapList(tkinter.Tk):
     def q_today(self):
         self.today_task = llcsv.getTodayTask()
         for task_id in self.today_task:
-            tTask = Task(self.today.scrollable_frame, self.footer.progress, task_id, self.refresh)
+            tTask = Task(self.today.scrollable_frame, self.footer.progress, task_id, self.refresh, self.get_tags)
 
     def q_complete(self):
         self.completed_task = llcsv.getCompletedTask() #returns a list of strings
         for task_id in self.completed_task: 
-            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id, self.refresh)
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task_id, self.refresh, self.get_tags)
 
     def q_upcoming(self):
         self.upcoming_tasks = llcsv.getUpcomingTask() #returns a list of strings
         for task_id in self.upcoming_tasks:
-            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id, self.refresh)
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task_id, self.refresh, self.get_tags)
 
     #### SIDEBAR BUTTON COMMANDS ####
     #displays the tasks that are due today in a GUI format
@@ -723,7 +730,7 @@ class LeapList(tkinter.Tk):
     #adds task
     def add_task(self, widget, upcoming):
         widget.config(fg = 'green')
-        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh, upcoming)
+        new_task = Task(self.current_frame.scrollable_frame, self.footer.progress, None, self.refresh, self.get_tags, upcoming)
         self.current_frame.bind_events()
         widget.config(fg = 'lightgreen')
         
@@ -740,11 +747,11 @@ class LeapList(tkinter.Tk):
 
     def refresh(self, task):
         if llcsv.is_completed(task.task_id):
-            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+            cTask = Task(self.completed.scrollable_frame, self.footer.progress, task.task_id, self.refresh, self.get_tags)
         elif llcsv.is_today(task.task_id):
-            tTask = Task(self.today.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+            tTask = Task(self.today.scrollable_frame, self.footer.progress, task.task_id, self.refresh, self.get_tags)
         else:
-            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task.task_id, self.refresh)
+            uTask = Task(self.upcoming.scrollable_frame, self.footer.progress, task.task_id, self.refresh, self.get_tags)
         task.frame.destroy()
 
 # create the application
