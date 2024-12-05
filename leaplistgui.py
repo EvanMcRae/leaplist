@@ -11,6 +11,7 @@ import math
 import datetime as dt
 from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
+from babel.dates import format_timedelta
 
 if sys.platform == "win32":
     from playsound import playsound
@@ -132,13 +133,19 @@ class Task():
             self.check = tkinter.Checkbutton(self.view_task_frame, onvalue = 1, offvalue = 0, variable = self.completed, command = self.complete_task, bg = '#605d60', activebackground = '#605d60')
             self.check.grid(column = 0, row = 0, padx = (10, 0))
 
-            self.label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', font = ('Arial', '20'))
-            self.label.grid(column = 1, row = 0, ipadx = 15, sticky = 'w')
+            self.label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', font = ('Arial', 20), width = 48, justify = 'left', anchor = 'w')
+            self.label.grid(column = 1, row = 0, ipadx = 20, sticky = 'w')
             self.view_task_frame.bind('<Double-Button-1>', self.edit_task)
             self.label.bind('<Double-Button-1>', self.edit_task)
 
-            self.view_task_frame.tag = tkinter.Label(self.view_task_frame, fg = '#ccc', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left')
-            self.view_task_frame.tag.grid(column = 1, row = 1, ipadx = 15, sticky = 'w')
+            self.view_task_frame.tag = tkinter.Label(self.view_task_frame, fg = '#ccc', bg = '#605d60', text = 'Tag: ', font = ('Arial', 15), justify = 'left', anchor = 'w')
+            self.view_task_frame.tag.grid(column = 1, row = 1, ipadx = 20, sticky = 'w')
+
+            self.view_task_frame.deadline_label = tkinter.Label(self.view_task_frame, fg = '#fff', bg = '#605d60', text = 'Deadline', font = ('Arial', 20), justify = 'left')
+            self.view_task_frame.deadline_label.grid(column = 2, row = 0, sticky = 'w')
+
+            self.view_task_frame.deadline = tkinter.Label(self.view_task_frame, fg = '#ccc', bg = '#605d60', text = 'Deadline', font = ('Arial', 15), justify = 'left')
+            self.view_task_frame.deadline.grid(column = 2, row = 1, sticky = 'w')
 
             #### Upon task refresh from CSV
             if task_id != None:
@@ -160,8 +167,18 @@ class Task():
             self.save_button.config(cursor = 'hand2')
         
         self.deadline = llcsv.get_deadline(self.task_id)
+        self.view_task_frame.deadline.config(text = 'None')
         try:
             self.deadline_entry.set_date(datetime.strptime(self.deadline, '%Y-%m-%d'))
+            time_difference = datetime.strptime(self.deadline, '%Y-%m-%d').date() - datetime.now().date()
+            relative_deadline = format_timedelta(time_difference, locale='en_US')
+            if relative_deadline == '0 seconds':
+                self.view_task_frame.deadline.config(text = 'Today')
+            elif time_difference < timedelta(0):
+                self.view_task_frame.deadline.config(text = relative_deadline + ' ago')
+            else:
+                self.view_task_frame.deadline.config(text = relative_deadline)
+
         except TypeError:
             self.deadline_entry.delete(0, "end")
         except ValueError:
@@ -299,9 +316,10 @@ class Task():
         self.frame.pack_forget()
 
     def edit_task(self, event):
-        self.editing = True
-        self.view_task_frame.pack_forget()
-        self.add_task_frame.pack(fill = 'both', expand = True)
+        if not llcsv.is_completed(self.task_id):
+            self.editing = True
+            self.view_task_frame.pack_forget()
+            self.add_task_frame.pack(fill = 'both', expand = True)
 
     def addTF(self):
         self.add_task_frame.pack()
