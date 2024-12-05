@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # Load CSV file into variable data
-data = pd.read_csv("Leaplist.csv")
+#TODO this does not work at runtime
+data = pd.read_csv("LeapList.csv")
 
 def convert_time(time):
     try:
@@ -16,6 +17,7 @@ def convert_time(time):
 
 #Py chart to represent information
 def daily_view_pychart(day):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
     # Get current date
@@ -42,6 +44,7 @@ def daily_view_pychart(day):
 
 #For specific time frame tasks ---------------------------------------------------------------------------------------
 def specific_date(start_date, end_date):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
     
@@ -69,6 +72,7 @@ def specific_date(start_date, end_date):
 
 # For Monthly Tasks -----------------------------------------------------------------------------------------------------
 def monthly_view(month):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
 
@@ -96,6 +100,7 @@ def monthly_view(month):
 
 # For Daily Task ---------------------------------------------------------------------------------------------------
 def daily_view(day):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -136,6 +141,7 @@ def daily_view(day):
 
 # Monthly Time bar graph
 def month_time(month):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -176,6 +182,7 @@ def month_time(month):
 
 # For specific tasks within a time frame and how long was spent on each task
 def date_time(start_date, end_date):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -217,6 +224,7 @@ def date_time(start_date, end_date):
 #Functions for if no time input but with tag specific
 #Py chart to represent information
 def daily_view_py_tag(tag_id):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
     # Get current date
@@ -248,6 +256,7 @@ def daily_view_py_tag(tag_id):
 
 # For Monthly Tasks -----------------------------------------------------------------------------------------------------
 def month_py_tag(month, tag_id):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
 
@@ -275,6 +284,7 @@ def month_py_tag(month, tag_id):
 
 #For specific time frame tasks ---------------------------------------------------------------------------------------
 def date_py_tag(start_date, end_date, tag_id):
+    data = pd.read_csv("LeapList.csv")
     completed = 0
     uncompleted = 0
     
@@ -304,6 +314,7 @@ def date_py_tag(start_date, end_date, tag_id):
 #For tag specific items and time input
 # For Daily Task ---------------------------------------------------------------------------------------------------
 def daily_tag_bar(day, tag_id):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -348,6 +359,7 @@ def daily_tag_bar(day, tag_id):
 
 # For specific tasks within a time frame and how long was spent on each task
 def date_tag_bar(start_date, end_date, tag_id):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -379,6 +391,7 @@ def date_tag_bar(start_date, end_date, tag_id):
     return output_path
 
 def month_tag_bar(month, tag_id):
+    data = pd.read_csv("LeapList.csv")
     task_list = {}
     total_time = 0
 
@@ -418,7 +431,7 @@ def month_tag_bar(month, tag_id):
     return output_path
 
 def all_tags_no_time_input(daily, start_date, end_date, month):
-    data = pd.read_csv("Leaplist.csv")
+    data = pd.read_csv("LeapList.csv")
     if daily is not None:
         tag_list = {}
 
@@ -537,7 +550,7 @@ def all_tags_no_time_input(daily, start_date, end_date, month):
         return output_path
 
 def all_tags_time_input(daily, start_date, end_date, month):
-    data = pd.read_csv("Leaplist.csv")
+    data = pd.read_csv("LeapList.csv")
     if daily is not None:
         tag_list = {}
         total_time = 0
@@ -628,7 +641,6 @@ def all_tags_time_input(daily, start_date, end_date, month):
         return output_path
 
 def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
-    data = pd.read_csv("Leaplist.csv")
     if time_input is False:
         if tag_id is None:
             if daily:
