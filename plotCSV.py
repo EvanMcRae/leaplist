@@ -368,7 +368,7 @@ def date_tag_bar(start_date, end_date, tag_id):
         plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.1, f"{time:.2f} hrs", ha='center', va='bottom')
 
     # Label Plot
-    plt.title("Time Spent on Tasks with Tag " + tag_id + " From " + start_date + " to " + end_date)
+    plt.title("Time Spent on Tasks with Tag: " + tag_id + " From " + start_date + " to " + end_date)
     plt.xlabel("Task")
     plt.ylabel("Time Spent in Hours")
     
@@ -407,7 +407,7 @@ def month_tag_bar(month, tag_id):
     #plt.ylim(0, 1)  # y-axis starts from 0 and goes up to 100% (since it's a percentage)
     
     # Label Plot
-    plt.title("Monthly Time Spent on Tasks with Tag" + tag_id)
+    plt.title("Monthly Time Spent on Tasks with Tag: " + tag_id)
     plt.xlabel("Task")
     plt.ylabel("Time Spent in Hours")
 
@@ -418,6 +418,7 @@ def month_tag_bar(month, tag_id):
     return output_path
 
 def all_tags_no_time_input(daily, start_date, end_date, month):
+    data = pd.read_csv("Leaplist.csv")
     if daily is not None:
         tag_list = {}
 
@@ -536,6 +537,7 @@ def all_tags_no_time_input(daily, start_date, end_date, month):
         return output_path
 
 def all_tags_time_input(daily, start_date, end_date, month):
+    data = pd.read_csv("Leaplist.csv")
     if daily is not None:
         tag_list = {}
         total_time = 0
@@ -626,6 +628,7 @@ def all_tags_time_input(daily, start_date, end_date, month):
         return output_path
 
 def create_productivity(daily, start_date, end_date, month, tag_id, time_input):
+    data = pd.read_csv("Leaplist.csv")
     if time_input is False:
         if tag_id is None:
             if daily:
