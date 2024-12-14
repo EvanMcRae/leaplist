@@ -31,10 +31,12 @@ The primary technical challenges included managing the CSV-based data structure 
 The project ultimately served as an exploration of backend data manipulation and frontend GUI integration in Python. It demonstrated the importance of leveraging user input for both functionality and visual engagement, as well as the challenges of ensuring consistent performance across different operating systems.
 
 Instructions to run the provided executable (Windows ONLY):
+
 	1. Download "leaplistgui-exec.zip" and unzip 
 	2. Double-click on "leaplistgui.exe" and the application will pop up on your machine
 
 Instructions to run via a Python Interpreter: 
+
 	1. Ensure Python is installed on your machine
 	2. Ensure the necessary libraries outlined above are installed
 	3. Clone or download the repository containing the Leaplist files
