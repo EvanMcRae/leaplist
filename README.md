@@ -3,10 +3,12 @@ CMSC 447 Fall 2024 Logic Loopers Group Project
 Authors: David Bower, Evan McRae, Olivia Patterson, Sophia Xu, William Zheng
 
 Project Title: Leaplist
+
 Description: 
 Leaplist is a modern to-do list application to help users leap into productivity! Leaplist is a desktop application designed to enhance the user's productivity by providing advanced task organization tools, and customizable productivity visualizations, and encourage user productivity. 
 
 Tech stack: 
+
 	- Programming Language: Python
 	- Libraries: 
 		-Tkinter: For implementing the GUI
